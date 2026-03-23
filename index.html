@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>꼬마 마법사 아리의 덧셈 연습</title>
+    <style>
+        body { text-align: center; font-family: 'Malgun Gothic', sans-serif; background-color: #f9f9fa; margin: 0; padding: 20px; }
+        #game-container { background-color: white; border-radius: 20px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #8A2BE2; font-size: 28px; }
+        #ari_img { width: 200px; height: 200px; object-fit: contain; margin-bottom: 20px; transition: 0.3s; }
+        #question { font-size: 45px; font-weight: bold; color: #333; margin: 10px 0 20px 0; }
+        #user_answer { font-size: 35px; width: 150px; text-align: center; border: 3px solid #ccc; border-radius: 10px; padding: 10px; margin-bottom: 20px; }
+        button { font-size: 24px; padding: 12px 30px; background-color: #ff9800; color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
+        button:active { transform: scale(0.95); }
+        #feedback { font-size: 22px; font-weight: bold; margin-top: 20px; min-height: 30px; }
+        #cookie_jar { margin-top: 30px; padding: 15px; background-color: #fff3e0; border-radius: 15px; min-height: 60px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; }
+        .cookie-icon { width: 40px; height: 40px; object-fit: contain; animation: pop 0.3s ease-in-out; }
+        
+        @keyframes pop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>🌟 마법사 아리와 3학년 덧셈 🌟</h1>
+    
+    <img id="ari_img" src="images/ari_happy.png" alt="꼬마 마법사 아리">
+    
+    <div id="question">100 + 200 = ?</div>
+    <input type="number" id="user_answer" placeholder="정답">
+    <br>
+    <button onclick="checkAnswer()">확인하기!</button>
+    
+    <div id="feedback"></div>
+    
+    <div id="cookie_jar">
+        <span style="width:100%; color:#ff9800; font-weight:bold; font-size:18px;">🍪 아리의 쿠키 바구니 🍪</span>
+    </div>
+</div>
+
+<script>
+    let num1, num2, correctAnswer;
+
+    function makeQuestion() {
+        // 100 ~ 999 사이의 세 자리 수 두 개 생성 (채윤이 맞춤 난이도!)
+        num1 = Math.floor(Math.random() * 900) + 100;
+        num2 = Math.floor(Math.random() * 900) + 100;
+        correctAnswer = num1 + num2;
+        
+        document.getElementById('question').innerText = num1 + " + " + num2 + " = ?";
+        document.getElementById('user_answer').value = '';
+        document.getElementById('feedback').innerText = '';
+        
+        // 문제 낼 때는 항상 웃는 아리로!
+        document.getElementById('ari_img').src = 'images/ari_happy.png';
+        
+        // 입력창에 바로 커서 가도록 설정 (패드에서 편하게)
+        document.getElementById('user_answer').focus();
+    }
+
+    function checkAnswer() {
+        let userAnswer = parseInt(document.getElementById('user_answer').value);
+        let feedbackEl = document.getElementById('feedback');
+        let ariImg = document.getElementById('ari_img');
+        
+        if (userAnswer === correctAnswer) {
+            feedbackEl.innerText = "🎉 우와! 정답이야! 쿠키 획득!";
+            feedbackEl.style.color = "#4CAF50";
+            ariImg.src = 'images/ari_happy.png'; // 정답일 때도 웃는 아리
+            
+            // 쿠키 바구니에 쿠키 추가!
+            let cookie = document.createElement('img');
+            cookie.src = 'images/cookie.png';
+            cookie.className = 'cookie-icon';
+            document.getElementById('cookie_jar').appendChild(cookie);
+            
+            // 2초 뒤에 새로운 문제 출제
+            setTimeout(makeQuestion, 2000); 
+        } else {
+            feedbackEl.innerText = "🤔 앗... 아리가 헷갈리나 봐. 다시 계산해 볼까?";
+            feedbackEl.style.color = "#F44336";
+            ariImg.src = 'images/ari_think.png'; // 틀리면 갸우뚱 아리로 변경!
+        }
+    }
+
+    // 처음 화면 열릴 때 첫 문제 만들기
+    makeQuestion();
+</script>
+
+</body>
+</html>
