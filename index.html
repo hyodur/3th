@@ -92,12 +92,12 @@
         </div>
 
         <div class="shop-item">
-            <img src="images/bg_flower.jpg" alt="꽃가루 동산">
+            <img src="images/bg_flower.png" alt="꽃가루 동산">
             <div style="text-align: left; flex-grow: 1; margin-left: 15px;">
                 <div style="font-weight: bold;">꽃가루 동산 배경</div>
                 <div style="color: #ff9800; font-weight: bold;">🍪 10개</div>
             </div>
-            <button id="btn_bg_flower" class="buy-btn" onclick="buyItem('bg_flower', 10, 'bg', 'bg_flower.jpg')">구매</button>
+            <button id="btn_bg_flower" class="buy-btn" onclick="buyItem('bg_flower', 10, 'bg', 'bg_flower.png')">구매</button>
         </div>
 
         <div class="shop-item">
@@ -239,7 +239,7 @@
     // 🛍️ 상점 버튼 디자인 갱신 (쿠키가 부족한지, 구매했는지)
     function updateShopUI() {
         updateItemButton('btn_bg_forest', 'bg_forest', 5, currentBg === 'bg_forest.jpg');
-        updateItemButton('btn_bg_flower', 'bg_flower', 10, currentBg === 'bg_flower.jpg');
+        updateItemButton('btn_bg_flower', 'bg_flower', 10, currentBg === 'bg_flower.png');
         updateItemButton('btn_friend_rabbit', 'friend_rabbit', 15, currentFriend === 'friend_rabbit.png');
     }
 
