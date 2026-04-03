@@ -123,8 +123,7 @@
                 
                 // 클릭하면 게임 화면으로 이동 (아직 파일은 없지만 뼈대만 연결)
                 btn.onclick = () => {
-                    alert(stage.id + "단계 [" + stage.name + "] (으)로 이동합니다!");
-                    location.href = `game.html?stage=${stage.id}`; // 나중에 이 주석을 풀 거예요!
+                    window.location.href = `game.html?stage=${stage.id}`; 
                 };
             }
 
