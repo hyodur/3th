@@ -3,185 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>아리의 마법 훈련소 (하이브리드 버전)</title>
+    <title>아리의 마법 훈련소 (통합 완결판)</title>
     <style>
         body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; -webkit-touch-callout: none; user-select: none; }
-
         #top-bar { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
         .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 10; }
         .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
-
-        /* 레이아웃 겹침 해결: flex를 더 유연하게 */
         #stage1-area { display: none; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; margin-top: 5px; }
-        
         #number-bond-diagram { position: relative; width: 380px; height: 320px; background-color: rgba(255, 255, 255, 0.85); border: 5px solid #a29bfe; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 10px; }
-        
         .target-circle { position: absolute; width: 110px; height: 110px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background-color: #dfe6e9; border: 4px dashed #636e72; font-size: 35px; font-weight: bold; color: #2d3436; transition: background-color 0.2s; }
         .active-target { background-color: #ffeaa7; border-color: #fab1a0; }
-        
         .symbol-number { position: absolute; top: -10px; right: -10px; background-color: rgba(255, 255, 255, 0.95); border: 2px solid #a29bfe; border-radius: 50%; width: 35px; height: 35px; font-size: 20px; display: flex; justify-content: center; align-items: center; color: #6c5ce7; font-weight: bold; z-index: 5; }
-        .cookie-grid { display: flex; flex-wrap: wrap; justify-content: center; align-content: center; width: 90%; height: 90%; font-size: 20px; line-height: 1; } /* 쿠키 크기 줄이고 랩핑 */
-
+        .cookie-grid { display: flex; flex-wrap: wrap; justify-content: center; align-content: center; width: 90%; height: 90%; font-size: 20px; line-height: 1; }
         #circle-whole { top: 20px; left: 135px; border-style: solid; } 
         #circle-part1 { bottom: 20px; left: 40px; } 
         #circle-part2 { bottom: 20px; right: 40px; } 
-        
-        /* 선 모양을 CSS로 깔끔하게 처리 */
         .bond-line { position: absolute; background-color: #a29bfe; height: 4px; width: 100px; top: 150px; z-index: -1; }
         #line-left { left: 90px; transform: rotate(55deg); }
         #line-right { right: 90px; transform: rotate(-55deg); }
-
         #cookie-source { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 10px; }
         #cookie-shelf { display: flex; gap: 8px; font-size: 35px; cursor: pointer; padding: 10px 20px; background-color: rgba(255, 255, 255, 0.7); border-radius: 15px; }
         .draggable-cookie { position: absolute; width: 50px; height: 50px; font-size: 40px; text-align: center; cursor: grab; z-index: 50; pointer-events: none; }
-        
-        /* 아리와 버튼 영역 겹침 해결 (아래쪽으로 차곡차곡) */
         #bottom-area { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; margin-bottom: 20px; padding: 0 20px; box-sizing: border-box;}
         #ari-container { display: flex; align-items: center; }
         #ari-character { width: 120px; height: 120px; object-fit: contain; }
         #speech-bubble { background-color: white; border: 3px solid #a29bfe; border-radius: 15px; padding: 10px 20px; font-size: 18px; font-weight: bold; color: #2d3436; margin-left: 10px; max-width: 250px; }
-        
         #submit-btn { background-color: #00b894; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
-        #submit-btn:active { transform: scale(0.95); }
-
         #cookie-popup { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 200; animation: popIn 0.5s forwards; }
         #cookie-popup img { width: 250px; height: auto; }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
-
+        
+        /* 가로모드 압축 */
         @media (max-height: 480px) {
-            #stage1-area { 
-                transform: scale(0.55); 
-                transform-origin: top center; 
-                margin-bottom: -150px; 
-            }
+            #stage1-area { transform: scale(0.55); transform-origin: top center; margin-bottom: -150px; }
             #number-bond-diagram { margin-bottom: 0px; }
-            #cookie-source p { font-size: 12px; margin-bottom: 2px; }
-            #cookie-shelf { font-size: 22px; padding: 5px 15px; gap: 5px; }
-            .draggable-cookie { font-size: 28px; width: 30px; height: 30px; }
-            
+            #cookie-shelf { font-size: 22px; padding: 5px 15px; }
             #ari-character { width: 70px; height: 70px; }
-            #speech-bubble { font-size: 13px; padding: 5px 10px; max-width: 180px;}
+            #speech-bubble { font-size: 13px; max-width: 180px;}
             #submit-btn { padding: 8px 15px; font-size: 14px; }
-            #bottom-area { margin-bottom: 5px; gap: 10px;}
         }
     </style>
 </head>
 <body>
-
     <div id="top-bar">
         <button class="back-btn" onclick="location.href='index.html'">🗺️ 지도로 돌아가기</button>
         <div class="cookie-wallet">🍪 내 쿠키: <span id="cookie-count">0</span>개</div>
     </div>
-
     <div id="stage1-area">
         <div id="number-bond-diagram">
             <div class="bond-line" id="line-left"></div>
             <div class="bond-line" id="line-right"></div>
-            
-            <div class="target-circle" id="circle-whole">
-                <span id="whole-num-hint"></span>
-                <div class="symbol-number" id="whole-count-text">0</div>
-                <div class="cookie-grid" id="whole-cookie-grid"></div>
-            </div>
-            <div class="target-circle" id="circle-part1">
-                <span id="part1-num-hint"></span>
-                <div class="symbol-number" id="part1-count-text">0</div>
-                <div class="cookie-grid" id="part1-cookie-grid"></div>
-            </div>
-            <div class="target-circle" id="circle-part2">
-                <span id="part2-num-hint"></span>
-                <div class="symbol-number" id="part2-count-text">0</div>
-                <div class="cookie-grid" id="part2-cookie-grid"></div>
-            </div>
+            <div class="target-circle" id="circle-whole"><span id="whole-num-hint"></span><div class="symbol-number" id="whole-count-text"></div><div class="cookie-grid" id="whole-cookie-grid"></div></div>
+            <div class="target-circle" id="circle-part1"><span id="part1-num-hint"></span><div class="symbol-number" id="part1-count-text"></div><div class="cookie-grid" id="part1-cookie-grid"></div></div>
+            <div class="target-circle" id="circle-part2"><span id="part2-num-hint"></span><div class="symbol-number" id="part2-count-text"></div><div class="cookie-grid" id="part2-cookie-grid"></div></div>
         </div>
-
-        <div id="cookie-source">
-            <p style="margin: 0 0 5px 0; font-weight: bold; color: #2d3436; text-shadow: 1px 1px 2px white;">여기의 쿠키를 끌어다 놓으세요!</p>
-            <div id="cookie-shelf">
-                🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪
-            </div>
-        </div>
+        <div id="cookie-source"><div id="cookie-shelf">🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪</div></div>
     </div>
-
     <div id="bottom-area">
-        <div id="ari-container">
-            <img id="ari-character" src="images/ari_happy.png" alt="아리">
-            <div id="speech-bubble">
-                <span id="ari-text"></span>
-            </div>
-        </div>
+        <div id="ari-container"><img id="ari-character" src="images/ari_happy.png" alt="아리"><div id="speech-bubble"><span id="ari-text"></span></div></div>
         <button id="submit-btn" onclick="checkAnswer()">마법 부리기!</button>
     </div>
-
-    <div id="cookie-popup">
-        <img src="images/success_cookie_popup.png" alt="정답 쿠키">
-    </div>
+    <div id="cookie-popup"><img src="images/success_cookie_popup.png" alt="정답 쿠키"></div>
 
     <script>
-        /* ▼▼▼ 선생님이 짚어주신 바로 그 명당자리! 소리 마법 쏙! ▼▼▼ */
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
-
-        function playTone(frequency, type, duration, startTime=0) {
+        function playTone(freq, type, dur, start=0) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            oscillator.type = type; 
-            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime + startTime);
-            
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime + startTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startTime + duration);
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.start(audioCtx.currentTime + startTime);
-            oscillator.stop(audioCtx.currentTime + startTime + duration);
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime + start);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + start); osc.stop(audioCtx.currentTime + start + dur);
         }
+        function playMoveSound() { playTone(600, 'sine', 0.1); playTone(800, 'sine', 0.15, 0.05); }
+        function playSuccessSound() { playTone(523.25, 'sine', 0.2); playTone(659.25, 'sine', 0.2, 0.1); playTone(783.99, 'sine', 0.4, 0.2); }
+        function playFailSound() { playTone(300, 'triangle', 0.3); playTone(200, 'triangle', 0.5, 0.4); }
 
-        function playMoveSound() {
-            playTone(600, 'sine', 0.1);
-            playTone(800, 'sine', 0.15, 0.05);
-        }
-
-        function playSuccessSound() {
-            playTone(523.25, 'sine', 0.2); 
-            playTone(659.25, 'sine', 0.2, 0.1); 
-            playTone(783.99, 'sine', 0.4, 0.2); 
-            playTone(1046.50, 'sine', 0.6, 0.3); 
-        }
-
-        function playFailSound() {
-            playTone(300, 'triangle', 0.3);
-            playTone(250, 'triangle', 0.3, 0.2);
-            playTone(200, 'triangle', 0.5, 0.4);
-        }
-        /* ▲▲▲ 여기까지가 소리 마법! ▲▲▲ */
         const urlParams = new URLSearchParams(window.location.search);
         let stage = parseInt(urlParams.get('stage')) || 1; 
-
         if(stage === 1) { document.getElementById('stage1-area').style.display = 'flex'; }
-
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
-
-        let problemWhole = 0;
-        let problemType = ""; 
+        let problemWhole = 0, problemType = ""; 
 
         function makeProblemStage1() {
             problemType = Math.random() < 0.5 ? "모으기" : "가르기";
             problemWhole = Math.floor(Math.random() * 5) + 3; 
-
             document.getElementById('ari-character').src = 'images/ari_happy.png';
-            resetCircle('whole'); resetCircle('part1'); resetCircle('part2');
-
+            ['whole', 'part1', 'part2'].forEach(id => {
+                const c = document.getElementById('circle-'+id);
+                c.classList.remove('active-target'); c.setAttribute('data-count', '0');
+                document.getElementById(id+'-num-hint').innerText = "";
+                document.getElementById(id+'-count-text').innerText = "";
+                document.getElementById(id+'-cookie-grid').innerHTML = "";
+            });
             if(problemType === "모으기") {
-                let p1 = Math.floor(Math.random() * (problemWhole - 1)) + 1;
-                let p2 = problemWhole - p1;
-                fillCircleHint('part1', p1);
-                fillCircleHint('part2', p2);
-                
+                let p1 = Math.floor(Math.random() * (problemWhole - 1)) + 1, p2 = problemWhole - p1;
+                fillCircleHint('part1', p1); fillCircleHint('part2', p2);
                 document.getElementById('circle-whole').classList.add('active-target');
                 document.getElementById('ari-text').innerText = "이 두 쿠키 마법을 모으면 얼마가 될까?";
             } else {
@@ -191,133 +112,67 @@
                 document.getElementById('ari-text').innerText = "이 쿠키 마법을 두 곳으로 갈라볼까?";
             }
         }
-
-        function resetCircle(id) {
-            const circle = document.getElementById('circle-'+id);
-            circle.classList.remove('active-target');
-            circle.setAttribute('data-count', '0'); 
-            document.getElementById(id+'-num-hint').innerText = "";
-            document.getElementById(id+'-count-text').innerText = ""; 
-            document.getElementById(id+'-cookie-grid').innerHTML = "";
-        }
-
         function fillCircleHint(id, num) {
             document.getElementById(id+'-num-hint').innerText = num; 
-            let cookies = "";
-            for(let i=0; i<num; i++) { cookies += "🍪"; }
-            document.getElementById(id+'-cookie-grid').innerHTML = cookies; 
+            let cks = ""; for(let i=0; i<num; i++) cks += "🍪";
+            document.getElementById(id+'-cookie-grid').innerHTML = cks;
         }
 
-        /* --- [핵심] 마우스 + 터치 통합 드래그 로직 --- */
         const cookieShelf = document.getElementById('cookie-shelf');
         let draggedEmoji = null;
-
         function startDrag(e) {
-            e.preventDefault(); 
-            draggedEmoji = document.createElement('div');
-            draggedEmoji.className = 'draggable-cookie';
-            draggedEmoji.innerText = "🍪";
-            document.body.appendChild(draggedEmoji);
-            updateDraggedPos(e);
+            e.preventDefault(); draggedEmoji = document.createElement('div');
+            draggedEmoji.className = 'draggable-cookie'; draggedEmoji.innerText = "🍪";
+            document.body.appendChild(draggedEmoji); updateDraggedPos(e);
         }
-
-        function moveDrag(e) {
+        function moveDrag(e) { if(!draggedEmoji) return; e.preventDefault(); updateDraggedPos(e); }
+        function endDrag(e) {
             if(!draggedEmoji) return;
-            e.preventDefault();
-            updateDraggedPos(e);
-        }
-
-       function endDrag(e) {
-            if(!draggedEmoji) return;
-            
-            // 터치/마우스 이벤트에서 커서 위치 가져오기
-            const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-            const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-            
-            // 커서 아래에 있는 요소 확인
-            draggedEmoji.style.display = 'none'; // 잠시 숨겨서 아래 요소 파악
-            const dropElement = document.elementFromPoint(clientX, clientY);
-            draggedEmoji.style.display = 'block';
-
-            if(dropElement && dropElement.closest('.active-target')) {
-                const target = dropElement.closest('.active-target');
-                let currentCount = parseInt(target.getAttribute('data-count')) || 0;
-                
-                // 쿠키 9개까지만 들어가게 제한 (안 넘치게!)
-                if (currentCount < 9) {
-                    currentCount++;
-                    target.querySelector('.cookie-grid').innerText += "🍪";
-                    target.querySelector('.symbol-number').innerText = currentCount;
-                    target.setAttribute('data-count', currentCount); 
-
-                    // ▼▼▼ [추가] 쿠키가 들어갈 때 뾰로롱! ▼▼▼
-                    playMoveSound(); 
+            const cx = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+            const cy = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+            draggedEmoji.style.display = 'none'; const dropEl = document.elementFromPoint(cx, cy);
+            if(dropEl && dropEl.closest('.active-target')) {
+                const target = dropEl.closest('.active-target');
+                let count = parseInt(target.getAttribute('data-count')) || 0;
+                if (count < 9) {
+                    count++; target.querySelector('.cookie-grid').innerText += "🍪";
+                    target.querySelector('.symbol-number').innerText = count;
+                    target.setAttribute('data-count', count); playMoveSound();
                 }
             }
-            document.body.removeChild(draggedEmoji);
-            draggedEmoji = null;
+            document.body.removeChild(draggedEmoji); draggedEmoji = null;
         }
-
         function updateDraggedPos(e) {
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            draggedEmoji.style.left = (clientX - 25) + 'px';
-            draggedEmoji.style.top = (clientY - 25) + 'px';
+            const cx = e.touches ? e.touches[0].clientX : e.clientX, cy = e.touches ? e.touches[0].clientY : e.clientY;
+            draggedEmoji.style.left = (cx - 25) + 'px'; draggedEmoji.style.top = (cy - 25) + 'px';
         }
-
-        // 터치 이벤트 연결
         cookieShelf.addEventListener('touchstart', startDrag, {passive: false});
         document.addEventListener('touchmove', moveDrag, {passive: false});
         document.addEventListener('touchend', endDrag);
-
-        // PC 마우스 이벤트 연결 (테스트용!)
         cookieShelf.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', moveDrag);
         document.addEventListener('mouseup', endDrag);
 
         function checkAnswer() {
-            const popup = document.getElementById('cookie-popup');
             let success = false;
-
             if(problemType === "모으기") {
-                const count = parseInt(document.getElementById('circle-whole').getAttribute('data-count')) || 0;
-                if(count === problemWhole) success = true;
+                if(parseInt(document.getElementById('circle-whole').getAttribute('data-count')) === problemWhole) success = true;
             } else {
-                const c1 = parseInt(document.getElementById('circle-part1').getAttribute('data-count')) || 0;
-                const c2 = parseInt(document.getElementById('circle-part2').getAttribute('data-count')) || 0;
-                if(c1 + c2 === problemWhole && c1 > 0 && c2 > 0) success = true; 
+                let c1 = parseInt(document.getElementById('circle-part1').getAttribute('data-count')), c2 = parseInt(document.getElementById('circle-part2').getAttribute('data-count'));
+                if(c1 + c2 === problemWhole && c1 > 0 && c2 > 0) success = true;
             }
-
             if(success) {
-                // ▼▼▼ [추가] 정답일 때 딩동댕! ▼▼▼
-                playSuccessSound();
-
-                myCookies++;
-                localStorage.setItem('ari_cookies', myCookies);
+                playSuccessSound(); myCookies++; localStorage.setItem('ari_cookies', myCookies);
                 document.getElementById('cookie-count').innerText = myCookies;
-                
-                popup.style.display = 'block';
-                setTimeout(() => {
-                    popup.style.display = 'none';
-                    makeProblemStage1();
-                }, 1500);
-           } else {
-
-                // ▼▼▼ [추가] 틀렸을 때 띠로리~ ▼▼▼
-
-                playFailSound();
-
-
-
-                document.getElementById('ari-character').src = 'images/ari_think.png';
-
-                alert("아리가 마법 주문을 헷갈려해요! 다시 한번 도와줄까요?");
-
-                document.getElementById('ari-character').src = 'images/ari_happy.png';
-
+                document.getElementById('cookie-popup').style.display = 'block';
+                setTimeout(() => { document.getElementById('cookie-popup').style.display = 'none'; makeProblemStage1(); }, 1500);
+            } else {
+                playFailSound(); document.getElementById('ari-character').src = 'images/ari_think.png';
+                document.getElementById('ari-text').innerText = "어라? 마법 주문이 살짝 꼬였나 봐요. 다시 해볼까요?";
+                setTimeout(() => { document.getElementById('ari-character').src = 'images/ari_happy.png'; makeProblemStage1(); }, 2000);
             }
+        }
         if(stage === 1) makeProblemStage1();
-
     </script>
 </body>
 </html>
