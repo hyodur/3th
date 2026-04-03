@@ -3,270 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>꼬마 마법사 아리의 덧셈 연습</title>
+    <title>아리의 마법 숲 지도</title>
     <style>
-        /* 🌳 배경 이미지가 꽉 차게 들어갈 수 있도록 body 설정 추가 */
-        body { text-align: center; font-family: 'Malgun Gothic', sans-serif; background-color: #f9f9fa; background-size: cover; background-position: center; background-attachment: fixed; margin: 0; padding: 20px; overflow-x: hidden; transition: background-image 0.5s; }
-        
-        #game-container { position: relative; background-color: rgba(255, 255, 255, 0.9); /* 배경이 살짝 비치도록 투명도 추가 */ border-radius: 20px; padding: 30px; max-width: 500px; margin: 60px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
-        #cookie_counter { position: absolute; top: -20px; right: 20px; background-color: #ff9800; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 3px solid white; z-index: 10; }
-        
-        /* 🛒 상점 버튼 스타일 */
-        #shop_btn { position: absolute; top: -30px; left: 20px; cursor: pointer; transition: 0.2s; z-index: 10; }
-        #shop_btn img { width: 60px; height: 60px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 3px solid white; background-color: white;}
-        #shop_btn:hover { transform: scale(1.1); }
-
-        h1 { color: #8A2BE2; font-size: 28px; margin-top: 20px; }
-        
-        /* 🐰 친구와 아리가 나란히 서 있도록 Flexbox 사용 */
-        #character_area { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 20px; height: 220px; }
-        #ari_img { width: 200px; height: 200px; object-fit: contain; transition: 0.3s; z-index: 2; }
-        #friend_img { width: 130px; height: 130px; object-fit: contain; display: none; /* 처음엔 숨김 */ z-index: 1; }
-
-        #question { font-size: 45px; font-weight: bold; color: #333; margin: 10px 0 20px 0; }
-        #user_answer { font-size: 35px; width: 150px; text-align: center; border: 3px solid #ccc; border-radius: 10px; padding: 10px; margin-bottom: 20px; outline: none; }
-        button.action-btn { font-size: 24px; padding: 12px 30px; background-color: #4CAF50; color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); transition: 0.2s; font-weight: bold; }
-        button.action-btn:active { transform: scale(0.95); }
-        #feedback { font-size: 22px; font-weight: bold; margin-top: 20px; min-height: 30px; }
-        
-        #giant_cookie { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 200px; z-index: 1000; pointer-events: none; }
-        .pop-animation { animation: popAndDisappear 1s ease-in-out forwards; }
-        
-        /* 🛍️ 마법 상점 팝업창 스타일 */
-        #shop_modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-        .shop-content { background-color: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; background-color: #f1f1f1; padding: 15px; margin: 10px 0; border-radius: 15px; }
-        .shop-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
-        .buy-btn { padding: 8px 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        .can-buy { background-color: #2196F3; }
-        .cannot-buy { background-color: #9e9e9e; cursor: not-allowed; }
-        .equipped-btn { background-color: #4CAF50; cursor: default; }
-        .close-shop { margin-top: 20px; padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; }
-
-        @keyframes popAndDisappear {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            40% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-            80% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fbebf6; /* 따뜻한 배경색 */
+            font-family: 'Malgun Gothic', sans-serif;
         }
+
+        #map-container {
+            position: relative;
+            width: 800px; /* 지도의 가로 크기 */
+            height: 450px; /* 지도의 세로 크기 */
+            background-image: url('images/map_background.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* 단계별 버튼 공통 스타일 */
+        .stage-btn {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stage-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* 아이콘 이미지 크기 */
+        .stage-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 잠긴 단계는 클릭 안 되게! */
+        .locked {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        
+        .locked:hover {
+            transform: scale(1);
+        }
+
+        /* ---------------------------------------------------
+           여기가 핵심! 지도 위 아이콘 위치 맞추기 
+           선생님 지도 이미지에 맞게 top, left %를 조절해야 합니다!
+        --------------------------------------------------- */
+        #stage1 { top: 35%; left: 15%; }
+        #stage2 { top: 45%; left: 35%; }
+        #stage3 { top: 70%; left: 45%; }
+        #stage4 { top: 65%; left: 68%; } /* 0의 마법 위치 */
+        #stage5 { top: 75%; left: 85%; }
+        
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <div id="shop_btn" onclick="openShop()">
-        <img src="images/shop_icon.png" alt="상점">
-    </div>
-
-    <div id="cookie_counter">🍪 내 쿠키: <span id="cookie_count">0</span>개</div>
-    
-    <h1>🌟 아리의 덧셈 놀이 🌟</h1>
-    
-    <div id="character_area">
-        <img id="friend_img" src="images/friend_rabbit.png" alt="토끼 친구">
-        <img id="ari_img" src="images/ari_happy.png" alt="꼬마 마법사 아리">
-    </div>
-    
-    <div id="question">100 + 200 = ?</div>
-    <input type="number" id="user_answer" placeholder="정답">
-    <br>
-    <button class="action-btn" onclick="checkAnswer()">확인하기!</button>
-    <div id="feedback"></div>
-</div>
-
-<img id="giant_cookie" src="images/cookie.png" alt="대왕 쿠키">
-
-<div id="shop_modal">
-    <div class="shop-content">
-        <h2 style="color: #8A2BE2; margin-top:0;">🛒 마법 상점</h2>
-        <p>모은 쿠키로 원하는 아이템을 사보세요!</p>
-        
-        <div class="shop-item">
-            <img src="images/bg_forest.jpg" alt="숲속 마을">
-            <div style="text-align: left; flex-grow: 1; margin-left: 15px;">
-                <div style="font-weight: bold;">숲속 마을 배경</div>
-                <div style="color: #ff9800; font-weight: bold;">🍪 5개</div>
-            </div>
-            <button id="btn_bg_forest" class="buy-btn" onclick="buyItem('bg_forest', 5, 'bg', 'bg_forest.jpg')">구매</button>
+    <div id="map-container">
         </div>
 
-        <div class="shop-item">
-            <img src="images/bg_flower.png" alt="꽃가루 동산">
-            <div style="text-align: left; flex-grow: 1; margin-left: 15px;">
-                <div style="font-weight: bold;">꽃가루 동산 배경</div>
-                <div style="color: #ff9800; font-weight: bold;">🍪 10개</div>
-            </div>
-            <button id="btn_bg_flower" class="buy-btn" onclick="buyItem('bg_flower', 10, 'bg', 'bg_flower.png')">구매</button>
-        </div>
-
-        <div class="shop-item">
-            <img src="images/friend_rabbit.png" alt="토끼 친구">
-            <div style="text-align: left; flex-grow: 1; margin-left: 15px;">
-                <div style="font-weight: bold;">토끼 친구 바니</div>
-                <div style="color: #ff9800; font-weight: bold;">🍪 15개</div>
-            </div>
-            <button id="btn_friend_rabbit" class="buy-btn" onclick="buyItem('friend_rabbit', 15, 'friend', 'friend_rabbit.png')">구매</button>
-        </div>
-
-        <button class="close-shop" onclick="closeShop()">상점 닫기</button>
-    </div>
-</div>
-
-<script>
-    let num1, num2, correctAnswer;
-    
-    // 💡 로컬 스토리지에서 정보 불러오기
-    let myCookies = localStorage.getItem('ari_cookies') ? parseInt(localStorage.getItem('ari_cookies')) : 0;
-    
-    // 구매한 아이템 목록 (배열 형태로 저장)
-    let myInventory = localStorage.getItem('ari_inventory') ? JSON.parse(localStorage.getItem('ari_inventory')) : [];
-    
-    // 현재 장착중인 아이템
-    let currentBg = localStorage.getItem('ari_bg') || '';
-    let currentFriend = localStorage.getItem('ari_friend') || '';
-
-    // 화면 초기화 함수 (저장된 배경과 친구 불러오기)
-    function initScreen() {
-        document.getElementById('cookie_count').innerText = myCookies;
-        
-        if(currentBg !== '') {
-            document.body.style.backgroundImage = `url('images/${currentBg}')`;
-        }
-        if(currentFriend !== '') {
-            let friendEl = document.getElementById('friend_img');
-            friendEl.src = `images/${currentFriend}`;
-            friendEl.style.display = 'block'; // 친구 보이기
-        }
-    }
-
-    // 덧셈 문제 만들기 (3학년 세 자리 수)
-    function makeQuestion() {
-        num1 = Math.floor(Math.random() * 900) + 100;
-        num2 = Math.floor(Math.random() * 900) + 100;
-        correctAnswer = num1 + num2;
-        
-        document.getElementById('question').innerText = num1 + " + " + num2 + " = ?";
-        document.getElementById('user_answer').value = '';
-        document.getElementById('feedback').innerText = '';
-        document.getElementById('ari_img').src = 'images/ari_happy.png';
-        document.getElementById('user_answer').focus();
-    }
-
-    // 정답 확인 및 쿠키 획득
-    function checkAnswer() {
-        let userAnswer = parseInt(document.getElementById('user_answer').value);
-        let feedbackEl = document.getElementById('feedback');
-        let ariImg = document.getElementById('ari_img');
-        let giantCookie = document.getElementById('giant_cookie');
-        
-        if (userAnswer === correctAnswer) {
-            feedbackEl.innerText = "🎉 우와! 정답! 대왕 쿠키 획득!";
-            feedbackEl.style.color = "#4CAF50";
-            ariImg.src = 'images/ari_happy.png'; 
-            
-            giantCookie.classList.remove('pop-animation');
-            void giantCookie.offsetWidth; 
-            giantCookie.classList.add('pop-animation');
-            
-            setTimeout(() => {
-                myCookies++; 
-                localStorage.setItem('ari_cookies', myCookies);
-                document.getElementById('cookie_count').innerText = myCookies;
-            }, 800);
-            
-            setTimeout(makeQuestion, 2000); 
+    <script>
+        // 1. 현재 열려있는 가장 높은 단계 확인 (기본값은 1단계)
+        let maxUnlockedStage = localStorage.getItem('ari_unlocked_stage');
+        if (!maxUnlockedStage) {
+            maxUnlockedStage = 1;
+            localStorage.setItem('ari_unlocked_stage', 1);
         } else {
-            feedbackEl.innerText = "🤔 앗... 아리가 헷갈리나 봐. 다시 계산해 볼까?";
-            feedbackEl.style.color = "#F44336";
-            ariImg.src = 'images/ari_think.png'; 
-        }
-    }
-
-    // 🛍️ 마법 상점 열기
-    function openShop() {
-        updateShopUI(); // 열 때마다 버튼 상태(구매가능/장착완료) 갱신
-        document.getElementById('shop_modal').style.display = 'flex';
-    }
-
-    // 🛍️ 마법 상점 닫기
-    function closeShop() {
-        document.getElementById('shop_modal').style.display = 'none';
-        document.getElementById('user_answer').focus();
-    }
-
-    // 🛍️ 아이템 구매 및 장착 로직
-    function buyItem(itemId, price, type, fileName) {
-        // 1. 이미 구매한 아이템인지 확인 -> 구매했으면 '장착'만 수행
-        if(myInventory.includes(itemId)) {
-            equipItem(type, fileName);
-            updateShopUI();
-            return;
+            maxUnlockedStage = parseInt(maxUnlockedStage);
         }
 
-        // 2. 구매 안 한 아이템이라면 쿠키 개수 확인 후 구매
-        if(myCookies >= price) {
-            myCookies -= price; // 쿠키 차감
-            localStorage.setItem('ari_cookies', myCookies);
-            document.getElementById('cookie_count').innerText = myCookies;
-            
-            myInventory.push(itemId); // 내 가방에 아이템 추가
-            localStorage.setItem('ari_inventory', JSON.stringify(myInventory)); // 가방 영구 저장
-            
-            equipItem(type, fileName); // 바로 장착!
-            updateShopUI();
-            alert("구매 성공! 바로 적용되었습니다. 🎉");
-        } else {
-            alert("앗! 쿠키가 부족해요. 문제를 더 풀어서 쿠키를 모아오세요! 🍪");
-        }
-    }
+        // 2. 단계별 정보 설정
+        const stages = [
+            { id: 1, name: "가르기와 모으기" },
+            { id: 2, name: "덧셈의 기초" },
+            { id: 3, name: "뺄셈의 기초" },
+            { id: 4, name: "0의 마법" }, // 4단계: 공개수업 하이라이트!
+            { id: 5, name: "덧셈 뺄셈 마스터" }
+        ];
 
-    // 🛍️ 아이템 장착 함수
-    function equipItem(type, fileName) {
-        if(type === 'bg') {
-            currentBg = fileName;
-            localStorage.setItem('ari_bg', currentBg);
-            document.body.style.backgroundImage = `url('images/${currentBg}')`;
-        } else if(type === 'friend') {
-            currentFriend = fileName;
-            localStorage.setItem('ari_friend', currentFriend);
-            let friendEl = document.getElementById('friend_img');
-            friendEl.src = `images/${currentFriend}`;
-            friendEl.style.display = 'block';
-        }
-    }
+        const mapContainer = document.getElementById('map-container');
 
-    // 🛍️ 상점 버튼 디자인 갱신 (쿠키가 부족한지, 구매했는지)
-    function updateShopUI() {
-        updateItemButton('btn_bg_forest', 'bg_forest', 5, currentBg === 'bg_forest.jpg');
-        updateItemButton('btn_bg_flower', 'bg_flower', 10, currentBg === 'bg_flower.png');
-        updateItemButton('btn_friend_rabbit', 'friend_rabbit', 15, currentFriend === 'friend_rabbit.png');
-    }
+        // 3. 지도 위에 아이콘 배치하기
+        stages.forEach(stage => {
+            const btn = document.createElement('div');
+            btn.className = 'stage-btn';
+            btn.id = 'stage' + stage.id;
 
-    // 개별 버튼 상태 변경 함수
-    function updateItemButton(btnId, itemId, price, isEquipped) {
-        let btn = document.getElementById(btnId);
-        
-        if (isEquipped) {
-            btn.className = 'buy-btn equipped-btn';
-            btn.innerText = '장착 중';
-        } else if (myInventory.includes(itemId)) {
-            btn.className = 'buy-btn can-buy';
-            btn.innerText = '장착하기';
-            btn.style.backgroundColor = '#8A2BE2'; // 구매한 건 보라색
-        } else if (myCookies >= price) {
-            btn.className = 'buy-btn can-buy';
-            btn.innerText = '구매';
-        } else {
-            btn.className = 'buy-btn cannot-buy';
-            btn.innerText = '쿠키 부족';
-        }
-    }
+            let iconImg = '';
 
-    // 시작할 때 화면 세팅하고 문제 내기
-    initScreen();
-    makeQuestion();
-</script>
+            // 상태에 따라 보여줄 이미지 결정
+            if (stage.id > maxUnlockedStage) {
+                // 잠긴 단계
+                btn.classList.add('locked');
+                iconImg = 'images/stage_icon_locked.png';
+                btn.onclick = () => alert("이전 마법을 먼저 마스터해야 열려요!");
+            } else {
+                // 열린 단계 (특별한 4단계 확인)
+                if (stage.id === 4) {
+                    iconImg = 'images/stage_0_special.png';
+                } else {
+                    iconImg = 'images/stage_icon_active.png';
+                }
+                
+                // 클릭하면 게임 화면으로 이동 (아직 파일은 없지만 뼈대만 연결)
+                btn.onclick = () => {
+                    alert(stage.id + "단계 [" + stage.name + "] (으)로 이동합니다!");
+                    // location.href = `game.html?stage=${stage.id}`; // 나중에 이 주석을 풀 거예요!
+                };
+            }
 
+            btn.innerHTML = `<img src="${iconImg}" alt="${stage.name}">`;
+            mapContainer.appendChild(btn);
+        });
+    </script>
 </body>
 </html>
