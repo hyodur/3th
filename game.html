@@ -227,7 +227,7 @@
             updateDraggedPos(e);
         }
 
-        function endDrag(e) {
+       function endDrag(e) {
             if(!draggedEmoji) return;
             
             // 터치/마우스 이벤트에서 커서 위치 가져오기
@@ -249,6 +249,9 @@
                     target.querySelector('.cookie-grid').innerText += "🍪";
                     target.querySelector('.symbol-number').innerText = currentCount;
                     target.setAttribute('data-count', currentCount); 
+
+                    // ▼▼▼ [추가] 쿠키가 들어갈 때 뾰로롱! ▼▼▼
+                    playMoveSound(); 
                 }
             }
             document.body.removeChild(draggedEmoji);
@@ -267,7 +270,7 @@
         document.addEventListener('touchmove', moveDrag, {passive: false});
         document.addEventListener('touchend', endDrag);
 
-        // PC 마우스 이벤트 연결 (선생님 테스트용!)
+        // PC 마우스 이벤트 연결 (테스트용!)
         cookieShelf.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', moveDrag);
         document.addEventListener('mouseup', endDrag);
@@ -286,6 +289,9 @@
             }
 
             if(success) {
+                // ▼▼▼ [추가] 정답일 때 딩동댕! ▼▼▼
+                playSuccessSound();
+
                 myCookies++;
                 localStorage.setItem('ari_cookies', myCookies);
                 document.getElementById('cookie-count').innerText = myCookies;
@@ -296,6 +302,9 @@
                     makeProblemStage1();
                 }, 1500);
             } else {
+                // ▼▼▼ [추가] 틀렸을 때 띠로리~ ▼▼▼
+                playFailSound();
+
                 document.getElementById('ari-character').src = 'images/ari_think.png';
                 alert("아리가 마법 주문을 헷갈려해요! 다시 한번 도와줄까요?");
                 document.getElementById('ari-character').src = 'images/ari_happy.png';
