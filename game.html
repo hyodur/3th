@@ -301,16 +301,28 @@
                     popup.style.display = 'none';
                     makeProblemStage1();
                 }, 1500);
-            } else {
-                // ▼▼▼ [추가] 틀렸을 때 띠로리~ ▼▼▼
+           } else {
+                // 틀렸을 때 띠로리~ 소리 재생
                 playFailSound();
 
+                // 1. 아리 표정을 '고민하는 표정'으로 바꿉니다! (alert 삭제!)
                 document.getElementById('ari-character').src = 'images/ari_think.png';
-                alert("아리가 마법 주문을 헷갈려해요! 다시 한번 도와줄까요?");
-                document.getElementById('ari-character').src = 'images/ari_happy.png';
-            }
-        }
+                
+                // 2. 말풍선 내용도 자연스럽게 바꿔줍니다!
+                document.getElementById('ari-text').innerText = "어라? 마법 주문이 살짝 꼬였나 봐요. 다시 해볼까요?";
 
+                // 3. 2초(2000ms) 뒤에 다시 웃는 표정과 원래 문제로 복구!
+                setTimeout(() => {
+                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    
+                    // 문제 종류에 따라 원래 대사로 되돌리기
+                    if(problemType === "모으기") {
+                        document.getElementById('ari-text').innerText = "이 두 쿠키 마법을 모으면 얼마가 될까?";
+                    } else {
+                        document.getElementById('ari-text').innerText = "이 쿠키 마법을 두 곳으로 갈라볼까?";
+                    }
+                }, 2000);
+            }
         if(stage === 1) makeProblemStage1();
 
     </script>
