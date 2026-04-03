@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>아리의 마법 훈련소 (통합 완결판)</title>
+    <title>아리의 마법 훈련소 (최종 완결판)</title>
     <style>
         body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; -webkit-touch-callout: none; user-select: none; }
         #top-bar { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
@@ -33,7 +33,6 @@
         #cookie-popup img { width: 250px; height: auto; }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
         
-        /* 가로모드 압축 */
         @media (max-height: 480px) {
             #stage1-area { transform: scale(0.55); transform-origin: top center; margin-bottom: -150px; }
             #number-bond-diagram { margin-bottom: 0px; }
@@ -167,30 +166,18 @@
                 document.getElementById('cookie-popup').style.display = 'block';
                 setTimeout(() => { document.getElementById('cookie-popup').style.display = 'none'; makeProblemStage1(); }, 1500);
             } else {
-                // 틀렸을 때 띠로리~ 소리 재생
+                // 오답 시 로직: 표정 바꾸고 2초 뒤에 복구 (문제는 안 바뀜!)
                 playFailSound(); 
-
-                // 1. 아리 표정을 '고민하는 표정'으로 바꿉니다!
                 document.getElementById('ari-character').src = 'images/ari_think.png';
-                
-                // 2. 말풍선 내용을 "다시 해볼까요?"로 바꿉니다.
                 document.getElementById('ari-text').innerText = "어라? 마법 주문이 살짝 꼬였나 봐요. 다시 한번 해볼까요?";
-
-                // 3. 2초(2000ms) 뒤에 아리 표정과 대사만 원래대로 복구!
-                setTimeout(() => {
-                    document.getElementById('ari-character').src = 'images/ari_happy.png';
-                    
-                    // 원래 하던 문제(모으기/가르기)의 대사로 되돌려주기
-                    if(problemType === "모으기") {
-                        document.getElementById('ari-text').innerText = "이 두 쿠키 마법을 모으면 얼마가 될까?";
-                    } else {
-                        document.getElementById('ari-text').innerText = "이 쿠키 마법을 두 곳으로 갈라볼까?";
-                    }
-                    
-                    // [핵심!] 여기에 있던 makeProblemStage1(); 줄을 삭제했어요.
-                    // 이제 문제가 바뀌지 않아서 아이들이 쿠키를 더 넣어서 정답을 맞힐 수 있습니다!
+                setTimeout(() => { 
+                    document.getElementById('ari-character').src = 'images/ari_happy.png'; 
+                    // 대사만 원래대로
+                    if(problemType === "모으기") document.getElementById('ari-text').innerText = "이 두 쿠키 마법을 모으면 얼마가 될까?";
+                    else document.getElementById('ari-text').innerText = "이 쿠키 마법을 두 곳으로 갈라볼까?";
                 }, 2000);
             }
+        }
         if(stage === 1) makeProblemStage1();
     </script>
 </body>
