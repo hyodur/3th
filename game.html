@@ -48,6 +48,22 @@
         #cookie-popup img { width: 250px; height: auto; }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
 
+        @media (max-height: 480px) {
+            #stage1-area { 
+                transform: scale(0.55); 
+                transform-origin: top center; 
+                margin-bottom: -150px; 
+            }
+            #number-bond-diagram { margin-bottom: 0px; }
+            #cookie-source p { font-size: 12px; margin-bottom: 2px; }
+            #cookie-shelf { font-size: 22px; padding: 5px 15px; gap: 5px; }
+            .draggable-cookie { font-size: 28px; width: 30px; height: 30px; }
+            
+            #ari-character { width: 70px; height: 70px; }
+            #speech-bubble { font-size: 13px; padding: 5px 10px; max-width: 180px;}
+            #submit-btn { padding: 8px 15px; font-size: 14px; }
+            #bottom-area { margin-bottom: 5px; gap: 10px;}
+        }
     </style>
 </head>
 <body>
