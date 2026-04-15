@@ -9,6 +9,11 @@
         #top-bar { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
         .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 10; }
         .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
+        .reflection-area { display: flex; gap: 10px; align-items: center; }
+        .reflection-btn { border: none; padding: 5px 12px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .reflection-btn:active { transform: scale(0.95); }
+        .btn-sweet { background-color: #ffda79; color: #cc8e35; } /* 달콤쿠키: 노란색 */
+        .btn-seed { background-color: #badc58; color: #6ab04c; }  /* 마법씨앗: 연두색 */
         #stage1-area { display: none; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; margin-top: 5px; }
         #number-bond-diagram { position: relative; width: 380px; height: 320px; background-color: rgba(255, 255, 255, 0.85); border: 5px solid #a29bfe; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 10px; }
         .target-circle { position: absolute; width: 110px; height: 110px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background-color: #dfe6e9; border: 4px dashed #636e72; font-size: 35px; font-weight: bold; color: #2d3436; transition: background-color 0.2s; }
@@ -36,6 +41,7 @@
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
         
         @media (max-height: 480px) {
+            #reflection-btn { font-size: 11px; padding: 3px 8px; }
             #stage1-area { transform: scale(0.55); transform-origin: top center; margin-bottom: -150px; }
             #number-bond-diagram { margin-bottom: 0px; }
             #cookie-shelf { font-size: 22px; padding: 5px 15px; }
@@ -47,9 +53,17 @@
     </style>
 </head>
 <body>
-    <div id="top-bar">
+   <div id="top-bar">
         <button class="back-btn" onclick="location.href='index.html'">🗺️ 지도로 돌아가기</button>
-        <div class="cookie-wallet">🍪 내 쿠키: <span id="cookie-count">0</span>개</div>
+        
+        <div class="reflection-area">
+            <button class="reflection-btn btn-sweet" onclick="saveReflection('달콤쿠키')">🍪 달콤쿠키 (잘 알아요)</button>
+            <button class="reflection-btn btn-seed" onclick="saveReflection('마법씨앗')">🌱 마법씨앗 (더 배울래요)</button>
+        </div>
+        
+        <div class="reflection-wallet">
+             <div class="cookie-wallet">🍪 내 쿠키: <span id="cookie-count">0</span>개</div>
+        </div>
     </div>
     <div id="stage1-area">
         <div id="number-bond-diagram">
@@ -168,6 +182,33 @@
                 target.querySelector('.cookie-grid').innerText = "";
                 target.querySelector('.symbol-number').innerText = "";
             });
+        }
+        // ▼▼▼ 자기 성찰 저장 마법 ▼▼▼
+        function saveReflection(type) {
+            // 1. 소리 재생 (뾰로롱!)
+            playMoveSound();
+
+            // 2. 아리의 반응
+            if(type === '달콤쿠키') {
+                document.getElementById('ari-text').innerText = "와! 마법을 완벽하게 익혔군요! 달콤한 배움이에요! ✨";
+            } else {
+                document.getElementById('ari-text').innerText = "마법씨앗을 심었군요! 내일은 더 멋진 싹이 날 거예요! 🌱";
+            }
+
+            // 3. 데이터 저장 (나중에 대시보드 연동을 위해 localStorage에 보관)
+            const reflectionData = {
+                stage: stage,
+                type: type,
+                time: new Date().toLocaleString()
+            };
+            
+            // 기존 기록 가져오기
+            let history = JSON.parse(localStorage.getItem('ari_reflections')) || [];
+            history.push(reflectionData);
+            localStorage.setItem('ari_reflections', JSON.stringify(history));
+
+            // 버튼 눌렀을 때의 효과 (잠시 강조)
+            console.log("선생님께 보낼 데이터:", reflectionData);
         }
         function checkAnswer() {
             let success = false;
