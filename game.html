@@ -29,6 +29,8 @@
         #ari-character { width: 120px; height: 120px; object-fit: contain; }
         #speech-bubble { background-color: white; border: 3px solid #a29bfe; border-radius: 15px; padding: 10px 20px; font-size: 18px; font-weight: bold; color: #2d3436; margin-left: 10px; max-width: 250px; }
         #submit-btn { background-color: #00b894; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
+        /* ▼▼▼ 기존 #submit-btn 아래에 추가! ▼▼▼ */
+        #clear-btn { background-color: #74b9ff; color: white; border: none; padding: 15px 20px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
         #cookie-popup { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 200; animation: popIn 0.5s forwards; }
         #cookie-popup img { width: 250px; height: auto; }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
@@ -39,7 +41,8 @@
             #cookie-shelf { font-size: 22px; padding: 5px 15px; }
             #ari-character { width: 70px; height: 70px; }
             #speech-bubble { font-size: 13px; max-width: 180px;}
-            #submit-btn { padding: 8px 15px; font-size: 14px; }
+            #submit-btn { padding: 8px 15px; font-size: 14px;}
+            #clear-btn { padding: 8px 15px; font-size: 14px; }
         }
     </style>
 </head>
@@ -58,8 +61,11 @@
         </div>
         <div id="cookie-source"><div id="cookie-shelf">🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪 🍪</div></div>
     </div>
-    <div id="bottom-area">
+   <div id="bottom-area">
         <div id="ari-container"><img id="ari-character" src="images/ari_happy.png" alt="아리"><div id="speech-bubble"><span id="ari-text"></span></div></div>
+        
+        <button id="clear-btn" onclick="clearCookies()">🧹 비우기</button>
+        
         <button id="submit-btn" onclick="checkAnswer()">마법 부리기!</button>
     </div>
     <div id="cookie-popup"><img src="images/success_cookie_popup.png" alt="정답 쿠키"></div>
@@ -152,6 +158,17 @@
         document.addEventListener('mousemove', moveDrag);
         document.addEventListener('mouseup', endDrag);
 
+        // ▼▼▼ 마법 빗자루(비우기) 기능 ▼▼▼
+        function clearCookies() {
+            playMoveSound(); // 빗자루 쓸 때도 뾰로롱 소리 나게!
+            
+            // 현재 입력 중인(active-target) 동그라미만 찾아서 0개로 싹 비웁니다!
+            document.querySelectorAll('.active-target').forEach(target => {
+                target.setAttribute('data-count', '0');
+                target.querySelector('.cookie-grid').innerText = "";
+                target.querySelector('.symbol-number').innerText = "";
+            });
+        }
         function checkAnswer() {
             let success = false;
             if(problemType === "모으기") {
