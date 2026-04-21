@@ -1,1 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>아리의 마법 훈련소 - 2단계 덧셈</title>
+    <style>
+        /* 기본 고정 UI 스타일 (1단계와 동일) */
+        body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; -webkit-touch-callout: none; user-select: none; }
+        #top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; box-sizing: border-box; }
+        .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .reflection-area { display: flex; gap: 10px; align-items: center; }
+        .reflection-btn { border: none; padding: 5px 12px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-sweet { background-color: #ffda79; color: #cc8e35; }
+        .btn-seed { background-color: #badc58; color: #6ab04c; }
+        .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
+        
+        /* 2단계 챕터 1 전용 스타일 (가운데 도화지) */
+        #stage2-area { display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; margin-top: 10px; }
+        #story-board { background-color: rgba(255, 255, 255, 0.9); border: 4px solid #74b9ff; border-radius: 20px; padding: 15px 25px; font-size: 22px; font-weight: bold; color: #2d3436; text-align: center; margin-bottom: 20px; width: 85%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #visual-board { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 45px; background-color: rgba(255,255,255,0.7); padding: 20px; border-radius: 30px; margin-bottom: 20px; }
+        .emoji-group { display: flex; flex-wrap: wrap; width: 120px; justify-content: center; }
+        .math-sign { font-size: 50px; font-weight: bold; color: #e17055; margin: 0 10px; }
+        
+        /* 숫자 입력 패드 */
+        #answer-box { width: 80px; height: 80px; border: 4px dashed #a29bfe; background-color: white; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 50px; font-weight: bold; color: #6c5ce7; }
+        #number-pad { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 80%; max-width: 400px; }
+        .num-btn { width: 55px; height: 55px; font-size: 28px; font-weight: bold; background-color: #ffeaa7; border: 3px solid #fdcb6e; border-radius: 15px; cursor: pointer; color: #d35400; box-shadow: 0 3px 0 #fdcb6e; }
+        .num-btn:active { transform: translateY(3px); box-shadow: 0 0 0 #fdcb6e; }
 
+        /* 하단 바 */
+        #bottom-area { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; margin-bottom: 20px; padding: 0 20px; box-sizing: border-box;}
+        #ari-container { display: flex; align-items: center; }
+        #ari-character { width: 120px; height: 120px; object-fit: contain; }
+        #speech-bubble { background-color: white; border: 3px solid #a29bfe; border-radius: 15px; padding: 10px 20px; font-size: 18px; font-weight: bold; color: #2d3436; margin-left: 10px; max-width: 250px; }
+        #clear-btn { background-color: #74b9ff; color: white; border: none; padding: 15px 20px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
+        #submit-btn { background-color: #00b894; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
+
+        /* 오버레이 팝업 (결과창) */
+        #result-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 300; justify-content: center; align-items: center; }
+        .result-box { background-color: white; padding: 40px; border-radius: 30px; text-align: center; border: 5px solid #a29bfe; }
+        .result-box h2 { font-size: 28px; color: #6c5ce7; margin-top: 0; }
+        .result-box p { font-size: 20px; color: #2d3436; }
+        .action-btn { background-color: #fd79a8; color: white; border: none; padding: 15px 30px; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        
+        @media (max-height: 480px) {
+            #visual-board { font-size: 35px; padding: 10px; margin-bottom: 10px; transform: scale(0.85); }
+            #story-board { font-size: 16px; padding: 10px; margin-bottom: 10px; }
+            .num-btn { width: 45px; height: 45px; font-size: 22px; }
+            #ari-character { width: 80px; height: 80px; }
+            #speech-bubble { font-size: 14px; max-width: 180px; padding: 8px 15px; }
+            #clear-btn, #submit-btn { padding: 10px 15px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="top-bar">
+        <button class="back-btn" onclick="location.href='index.html'">🗺️ 지도로 돌아가기</button>
+        <div class="reflection-area">
+            <button class="reflection-btn btn-sweet" onclick="saveReflection('달콤쿠키')">🍪 달콤쿠키 (잘 알아요)</button>
+            <button class="reflection-btn btn-seed" onclick="saveReflection('마법씨앗')">🌱 마법씨앗 (더 배울래요)</button>
+        </div>
+        <div class="cookie-wallet">🍪 내 쿠키: <span id="cookie-count">0</span>개</div>
+    </div>
+
+    <div id="stage2-area">
+        <div id="story-board">숲속 친구들이 모이고 있어요!</div>
+        <div id="visual-board">
+            <div class="emoji-group" id="group1"></div>
+            <div class="math-sign">+</div>
+            <div class="emoji-group" id="group2"></div>
+            <div class="math-sign">=</div>
+            <div id="answer-box">?</div>
+        </div>
+        
+        <div id="number-pad">
+            <script>
+                for(let i=1; i<=9; i++) {
+                    document.write(`<button class="num-btn" onclick="selectNumber(${i})">${i}</button>`);
+                }
+            </script>
+        </div>
+    </div>
+
+    <div id="bottom-area">
+        <div id="ari-container"><img id="ari-character" src="images/ari_happy.png" alt="아리"><div id="speech-bubble"><span id="ari-text"></span></div></div>
+        <button id="clear-btn" onclick="clearAnswer()">🧹 비우기</button>
+        <button id="submit-btn" onclick="checkAnswer()">마법 부리기!</button>
+    </div>
+
+    <div id="result-overlay">
+        <div class="result-box" id="result-content">
+            </div>
+    </div>
+
+    <script>
+        // 사운드 마법 (유지)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        function playTone(freq, type, dur, start=0) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime + start); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(audioCtx.currentTime + start); osc.stop(audioCtx.currentTime + start + dur);
+        }
+        function playTapSound() { playTone(600, 'sine', 0.1); }
+        function playSuccessSound() { playTone(523.25, 'sine', 0.2); playTone(659.25, 'sine', 0.2, 0.1); playTone(783.99, 'sine', 0.4, 0.2); }
+        function playFailSound() { playTone(300, 'triangle', 0.3); playTone(200, 'triangle', 0.5, 0.4); }
+
+        // 쿠키 지갑 및 성찰 (유지)
+        let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+        document.getElementById('cookie-count').innerText = myCookies;
+        function saveReflection(type) { playTapSound(); alert("오늘의 성찰 [" + type + "]이(가) 저장되었습니다!"); } // 임시 알림
+
+        // 숲속 테마 데이터
+        const themes = [
+            { emoji: '🌸', name: '예쁜 꽃이', verb: '피어있어요', addVerb: '더 피어났어요' },
+            { emoji: '🦋', name: '팔랑팔랑 나비가', verb: '날아왔어요', addVerb: '더 날아왔어요' },
+            { emoji: '🐰', name: '귀여운 토끼가', verb: '뛰어놀아요', addVerb: '더 놀러왔어요' },
+            { emoji: '🐿️', name: '다람쥐가', verb: '도토리를 먹어요', addVerb: '더 다가왔어요' },
+            { emoji: '🍄', name: '반짝이 버섯이', verb: '자라났어요', addVerb: '더 자라났어요' }
+        ];
+
+        // 게임 로직 변수
+        let currentAns = 0;
+        let selectedNum = null;
+        
+        // ⭐️ 핵심 진단 시스템 변수 ⭐️
+        let questionCount = 0; // 몇 문제 풀었는지 (최대 10)
+        let score = 0; // 첫 시도 정답 개수
+        let isFirstTry = true; // 현재 문제에서 한 번도 안 틀렸는가?
+
+        function generateProblem() {
+            // 1. 합이 9를 넘지 않게 숫자 뽑기
+            let num1 = Math.floor(Math.random() * 8) + 1; 
+            let num2 = Math.floor(Math.random() * (9 - num1)) + 1;
+            currentAns = num1 + num2;
+            
+            // 2. 랜덤 숲속 테마 뽑기
+            let theme = themes[Math.floor(Math.random() * themes.length)];
+            
+            // 3. 이야기 만들기
+            document.getElementById('story-board').innerText = `숲속에 ${theme.name} ${num1}개 ${theme.verb}. ${num2}개가 ${theme.addVerb}. 모두 몇 개일까요?`;
+            document.getElementById('ari-text').innerText = "그림을 보고 아래 숫자 버튼을 눌러 정답을 골라주세요!";
+            
+            // 4. 이모지 그리기
+            document.getElementById('group1').innerText = theme.emoji.repeat(num1);
+            document.getElementById('group2').innerText = theme.emoji.repeat(num2);
+            
+            // 5. 입력창 초기화
+            clearAnswer();
+            isFirstTry = true; // 새 문제니까 첫 시도로 리셋!
+        }
+
+        function selectNumber(num) {
+            playTapSound();
+            selectedNum = num;
+            document.getElementById('answer-box').innerText = num;
+        }
+
+        function clearAnswer() {
+            playTapSound();
+            selectedNum = null;
+            document.getElementById('answer-box').innerText = "?";
+        }
+
+        function checkAnswer() {
+            if (selectedNum === null) {
+                document.getElementById('ari-text').innerText = "숫자 버튼을 먼저 눌러주세요!";
+                return;
+            }
+
+            if (selectedNum === currentAns) {
+                // 정답!
+                playSuccessSound();
+                myCookies++; 
+                localStorage.setItem('ari_cookies', myCookies);
+                document.getElementById('cookie-count').innerText = myCookies;
+                
+                // 첫 시도에 맞혔다면 점수 증가
+                if(isFirstTry) score++;
+                
+                questionCount++; // 푼 문제 수 증가
+
+                // 10문제를 다 풀었는지 검사
+                if (questionCount >= 10) {
+                    showFinalResult();
+                } else {
+                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    document.getElementById('ari-text').innerText = "정답이에요! 아주 멋져요!";
+                    setTimeout(() => generateProblem(), 1500); // 1.5초 뒤 다음 문제
+                }
+            } else {
+                // 오답!
+                playFailSound();
+                isFirstTry = false; // 틀렸으니 첫 시도 정답은 날아감
+                document.getElementById('ari-character').src = 'images/ari_think.png';
+                document.getElementById('ari-text').innerText = "어라? 숲속 친구들을 다시 한번 천천히 세어볼까요?";
+                setTimeout(() => {
+                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    document.getElementById('ari-text').innerText = "그림을 보고 다시 정답을 골라주세요!";
+                }, 2000);
+            }
+        }
+
+        function showFinalResult() {
+            const overlay = document.getElementById('result-overlay');
+            const content = document.getElementById('result-content');
+            overlay.style.display = 'flex';
+
+            if (score >= 8) {
+                content.innerHTML = `
+                    <h2>✨ 훌륭한 꼬마 마법사 ✨</h2>
+                    <p>10문제 중 ${score}문제를 맞혔어요!<br>이야기 마법을 완벽하게 이해했군요!</p>
+                    <p>이제 진짜 수식 마법(챕터 2)을 부리러 가볼까요?</p>
+                    <button class="action-btn" onclick="alert('챕터 2로 넘어가는 마법을 준비 중입니다!')">챕터 2 도전하기!</button>
+                `;
+            } else {
+                content.innerHTML = `
+                    <h2>🌱 조금 더 자라날 시간 🌱</h2>
+                    <p>아리가 아직 이 마법 주문이 살짝 헷갈리나 봐요!</p>
+                    <p>우리 1단계로 돌아가서 쿠키 모으기를<br>딱 한 번만 더 연습하고 올까요?</p>
+                    <button class="action-btn" onclick="location.href='game.html?stage=1'">1단계 복습하러 가기</button>
+                `;
+            }
+        }
+
+        // 게임 시작!
+        generateProblem();
+    </script>
+</body>
+</html>
