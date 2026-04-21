@@ -221,9 +221,14 @@
             if(success) {
                 playSuccessSound(); myCookies++; localStorage.setItem('ari_cookies', myCookies);
                 document.getElementById('cookie-count').innerText = myCookies;
+
+                if (myCookies >= 30) {
+                    // '2단계 열림' 열쇠를 금고에 저장합니다.
+                    localStorage.setItem('ari_stage2_unlocked', 'true');
+                }
                 document.getElementById('cookie-popup').style.display = 'block';
                 setTimeout(() => { document.getElementById('cookie-popup').style.display = 'none'; makeProblemStage1(); }, 1500);
-            } else {
+            }  else {
                 // 오답 시 로직: 표정 바꾸고 2초 뒤에 복구 (문제는 안 바뀜!)
                 playFailSound(); 
                 document.getElementById('ari-character').src = 'images/ari_think.png';
