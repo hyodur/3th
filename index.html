@@ -132,6 +132,35 @@
             btn.innerHTML = `<img src="${iconImg}" alt="${stage.name}">`;
             mapContainer.appendChild(btn);
         });
-    </script>
+   <script>
+    // 페이지가 로드될 때 금고(localStorage)를 확인합니다.
+    window.onload = function() {
+        // 2단계 열쇠가 있는지 확인!
+        const isStage2Unlocked = localStorage.getItem('ari_stage2_unlocked');
+        const stage2Btn = document.getElementById('stage2-btn'); // 2단계 버튼이나 이미지의 ID를 맞춰주세요.
+
+        if (isStage2Unlocked === 'true') {
+            // 열쇠가 있다면?
+            // 1. 자물쇠 이미지를 열린 이미지(또는 2단계 아이콘)로 바꿉니다.
+            stage2Btn.src = 'images/stage2_open.png'; // 열린 이미지 경로로 수정!
+            
+            // 2. 클릭했을 때 2단계로 넘어가도록 링크를 걸어줍니다.
+            stage2Btn.onclick = function() {
+                location.href = 'stage2.html';
+            };
+            
+            // 3. 잠겨있다는 느낌을 주는 흐릿한 스타일(opacity)이 있었다면 원래대로!
+            stage2Btn.style.opacity = '1.0'; 
+            stage2Btn.style.cursor = 'pointer';
+
+        } else {
+            // 열쇠가 없다면? (아직 1단계를 안 깼을 때)
+            // 클릭해도 안 열린다고 아리가 말해주게 할 수 있어요!
+            stage2Btn.onclick = function() {
+                alert("아직 마법의 자물쇠가 잠겨있어요! 1단계를 먼저 클리어해주세요! 🔒");
+            };
+        }
+    };
+</script>
 </body>
 </html>
