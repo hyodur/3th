@@ -132,12 +132,13 @@
         }
 
         // 숲속 테마 데이터
+        // ▼▼▼ 기존 themes 배열을 찾아서 아래 코드로 싹 덮어써 주세요! ▼▼▼
         const themes = [
-            { emoji: '🌸', name: '예쁜 꽃이', verb: '피어있어요', addVerb: '더 피어났어요' },
-            { emoji: '🦋', name: '팔랑팔랑 나비가', verb: '날아왔어요', addVerb: '더 날아왔어요' },
-            { emoji: '🐰', name: '귀여운 토끼가', verb: '뛰어놀아요', addVerb: '더 놀러왔어요' },
-            { emoji: '🐿️', name: '다람쥐가', verb: '도토리를 먹어요', addVerb: '더 다가왔어요' },
-            { emoji: '🍄', name: '반짝이 버섯이', verb: '자라났어요', addVerb: '더 자라났어요' }
+            { emoji: '🌸', name: '예쁜 꽃이', verb: '피어있어요', addVerb: '더 피어났어요', unit: '송이' },
+            { emoji: '🦋', name: '팔랑팔랑 나비가', verb: '날아왔어요', addVerb: '더 날아왔어요', unit: '마리' },
+            { emoji: '🐰', name: '귀여운 토끼가', verb: '뛰어놀아요', addVerb: '더 놀러왔어요', unit: '마리' },
+            { emoji: '🐿️', name: '다람쥐가', verb: '도토리를 먹어요', addVerb: '더 다가왔어요', unit: '마리' },
+            { emoji: '🍄', name: '반짝이 버섯이', verb: '자라났어요', addVerb: '더 자라났어요', unit: '개' }
         ];
 
         // 게임 로직 변수
@@ -159,7 +160,7 @@
             let theme = themes[Math.floor(Math.random() * themes.length)];
             
             // 3. 이야기 만들기
-            document.getElementById('story-board').innerText = `숲속에 ${theme.name} ${num1}개 ${theme.verb}. ${num2}개가 ${theme.addVerb}. 모두 몇 개일까요?`;
+           document.getElementById('story-board').innerText = `숲속에 ${theme.name} ${num1}${theme.unit} ${theme.verb}. ${num2}${theme.unit}가(이) ${theme.addVerb}. 모두 몇 ${theme.unit}일까요?`;
             document.getElementById('ari-text').innerText = "그림을 보고 아래 숫자 버튼을 눌러 정답을 골라주세요!";
             
             // 4. 이모지 그리기 (바둑판 정렬 마법 적용!)
