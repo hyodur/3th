@@ -5,89 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아리의 마법 숲 지도</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #fbebf6; /* 따뜻한 배경색 */
-            font-family: 'Malgun Gothic', sans-serif;
-        }
-
-        #map-container {
-            position: relative;
-            width: 95vw; /* 화면 너비의 95% 꽉 채우기 */
-            max-width: 800px; /* 단, PC에서는 800px 이상 안 커짐 */
-            aspect-ratio: 16 / 9; /* 선생님 지도 원본 비율(16:9) 강제 고정! */
-            background-image: url('images/map_background.jpg');
-            background-size: 100% 100%; /* cover 대신 100%로 눌러 담기 */
-            background-repeat: no-repeat;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            /* overflow: hidden; */ /* 위치 맞추기 편하도록 잠시 껐습니다! */
-        }
-
-        /* 단계별 버튼 공통 스타일 */
-        .stage-btn {
-            position: absolute;
-            width: 10%; /* 지도가 작아지면 아이콘도 10% 비율로 같이 작아짐! */
-            height: auto;
-            aspect-ratio: 1 / 1;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stage-btn:hover {
-            transform: scale(1.1);
-        }
-
-        /* 아이콘 이미지 크기 */
-        .stage-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* 잠긴 단계는 클릭 안 되게! */
-        .locked {
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
+        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fbebf6; font-family: 'Malgun Gothic', sans-serif; }
+        #map-container { position: relative; width: 95vw; max-width: 800px; aspect-ratio: 16 / 9; background-image: url('images/map_background.jpg'); background-size: 100% 100%; background-repeat: no-repeat; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         
-        .locked:hover {
-            transform: scale(1);
-        }
+        .stage-btn { position: absolute; width: 10%; height: auto; aspect-ratio: 1 / 1; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .stage-btn:hover { transform: scale(1.1); }
+        .stage-btn img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .locked { cursor: not-allowed; opacity: 0.8; }
+        .locked:hover { transform: scale(1); }
 
-        /* ---------------------------------------------------
-           여기가 핵심! 지도 위 아이콘 위치 맞추기 
-           선생님 지도 이미지에 맞게 top, left %를 조절해야 합니다!
-        --------------------------------------------------- */
+        /* 지도 위 아이콘 위치 */
         #stage1 { top: 35%; left: 14%; }
         #stage2 { top: 39%; left: 33%; }
         #stage3 { top: 62%; left: 46%; }
-        #stage4 { top: 57%; left: 65%; } /* 0의 마법 위치 */
+        #stage4 { top: 57%; left: 65%; } 
         #stage5 { top: 67%; left: 83%; }
-        
     </style>
 </head>
 <body>
 
-    <div id="map-container">
-        </div>
+    <div id="map-container"></div>
 
     <script>
         // 1. 현재 열려있는 가장 높은 단계 확인 (기본값은 1단계)
-        let maxUnlockedStage = localStorage.getItem('ari_unlocked_stage');
-        if (!maxUnlockedStage) {
-            maxUnlockedStage = 1;
-            localStorage.setItem('ari_unlocked_stage', 1);
-        } else {
-            maxUnlockedStage = parseInt(maxUnlockedStage);
+        let maxUnlockedStage = parseInt(localStorage.getItem('ari_unlocked_stage')) || 1;
+
+        // 🌟 [핵심 수정] 1단계(game.html)에서 쿠키 30개를 모아 'ari_stage2_unlocked'가 true가 되었다면?
+        // maxUnlockedStage를 2단계로 올려줍니다!
+        if (localStorage.getItem('ari_stage2_unlocked') === 'true') {
+            if (maxUnlockedStage < 2) {
+                maxUnlockedStage = 2;
+                localStorage.setItem('ari_unlocked_stage', 2); // 금고 동기화
+            }
         }
 
         // 2. 단계별 정보 설정
@@ -95,7 +45,7 @@
             { id: 1, name: "가르기와 모으기" },
             { id: 2, name: "덧셈의 기초" },
             { id: 3, name: "뺄셈의 기초" },
-            { id: 4, name: "0의 마법" }, // 4단계: 공개수업 하이라이트!
+            { id: 4, name: "0의 마법" }, 
             { id: 5, name: "덧셈 뺄셈 마스터" }
         ];
 
@@ -105,62 +55,39 @@
         stages.forEach(stage => {
             const btn = document.createElement('div');
             btn.className = 'stage-btn';
-            btn.id = 'stage' + stage.id;
+            btn.id = 'stage' + stage.id; // 아이디가 stage1, stage2 등으로 자동 생성됨!
 
             let iconImg = '';
 
             // 상태에 따라 보여줄 이미지 결정
             if (stage.id > maxUnlockedStage) {
-                // 잠긴 단계
+                // 🔒 잠긴 단계
                 btn.classList.add('locked');
-                iconImg = 'images/stage_icon_locked.png';
-                btn.onclick = () => alert("이전 마법을 먼저 마스터해야 열려요!");
+                iconImg = 'images/stage_icon_locked.png'; // 선생님이 지정하신 잠금 이미지!
+                btn.onclick = () => alert("아직 마법의 자물쇠가 잠겨있어요! 이전 단계를 클리어해주세요! 🔒");
             } else {
-                // 열린 단계 (특별한 4단계 확인)
+                // ✨ 열린 단계
                 if (stage.id === 4) {
                     iconImg = 'images/stage_0_special.png';
                 } else {
-                    iconImg = 'images/stage_icon_active.png';
+                    iconImg = 'images/stage_icon_active.png'; // 선생님이 지정하신 활성 이미지!
                 }
                 
-                // 클릭하면 게임 화면으로 이동 (아직 파일은 없지만 뼈대만 연결)
+                // 클릭하면 이동하는 경로 설정
                 btn.onclick = () => {
-                    window.location.href = `game.html?stage=${stage.id}`; 
+                    if (stage.id === 1) {
+                        window.location.href = `game.html?stage=1`; 
+                    } else if (stage.id === 2) {
+                        window.location.href = `stage2.html`; // 2단계는 새로 만든 stage2로!
+                    } else {
+                        alert("마법 훈련소가 아직 건설 중입니다! 뚝딱뚝딱 🛠️");
+                    }
                 };
             }
 
             btn.innerHTML = `<img src="${iconImg}" alt="${stage.name}">`;
             mapContainer.appendChild(btn);
         });
-   <script>
-    // 페이지가 로드될 때 금고(localStorage)를 확인합니다.
-    window.onload = function() {
-        // 2단계 열쇠가 있는지 확인!
-        const isStage2Unlocked = localStorage.getItem('ari_stage2_unlocked');
-        const stage2Btn = document.getElementById('stage2-btn'); // 2단계 버튼이나 이미지의 ID를 맞춰주세요.
-
-        if (isStage2Unlocked === 'true') {
-            // 열쇠가 있다면?
-            // 1. 자물쇠 이미지를 열린 이미지(또는 2단계 아이콘)로 바꿉니다.
-            stage2Btn.src = 'images/stage2_open.png'; // 열린 이미지 경로로 수정!
-            
-            // 2. 클릭했을 때 2단계로 넘어가도록 링크를 걸어줍니다.
-            stage2Btn.onclick = function() {
-                location.href = 'stage2.html';
-            };
-            
-            // 3. 잠겨있다는 느낌을 주는 흐릿한 스타일(opacity)이 있었다면 원래대로!
-            stage2Btn.style.opacity = '1.0'; 
-            stage2Btn.style.cursor = 'pointer';
-
-        } else {
-            // 열쇠가 없다면? (아직 1단계를 안 깼을 때)
-            // 클릭해도 안 열린다고 아리가 말해주게 할 수 있어요!
-            stage2Btn.onclick = function() {
-                alert("아직 마법의 자물쇠가 잠겨있어요! 1단계를 먼저 클리어해주세요! 🔒");
-            };
-        }
-    };
-</script>
+    </script>
 </body>
 </html>
