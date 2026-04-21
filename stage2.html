@@ -19,14 +19,14 @@
         #stage2-area { display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; margin-top: 10px; }
         #story-board { background-color: rgba(255, 255, 255, 0.9); border: 4px solid #74b9ff; border-radius: 20px; padding: 15px 25px; font-size: 22px; font-weight: bold; color: #2d3436; text-align: center; margin-bottom: 20px; width: 85%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         #visual-board { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 45px; background-color: rgba(255,255,255,0.7); padding: 20px; border-radius: 30px; margin-bottom: 20px; }
-        .emoji-group { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 무조건 2칸씩 짝지어서 줄 서기! */
-            gap: 5px; /* 이모지 사이 간격 */
-            justify-items: center; 
-            align-items: center; 
-            min-width: 90px; 
-            line-height: 1.1; /* 세로로 너무 길어지지 않게 꽉 잡아주기 */
+       .emoji-group { 
+            display: flex; 
+            flex-wrap: wrap; /* 자리가 좁으면 밑으로 내려가게! */
+            width: 100px; /* 이 너비를 꽉 잡아서 강제로 2~3열로 만듭니다 */
+            justify-content: center; 
+            align-content: center;
+            gap: 5px; 
+            line-height: 1;
         }
         .math-sign { font-size: 50px; font-weight: bold; color: #e17055; margin: 0 10px; }
         
@@ -73,7 +73,7 @@
 
     <div id="stage2-area">
         <div id="progress-bar" style="background-color: #ffeaa7; color: #d35400; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; border: 2px solid #fdcb6e;">
-            마법 도전: <span id="current-q-num">1</span> / 10
+            🌟 맞힌 문제: <span id="current-score">0</span> / 10
         </div>
         <div id="story-board">숲속 친구들이 모이고 있어요!</div>
         <div id="visual-board">
@@ -122,7 +122,14 @@
         // 쿠키 지갑 및 성찰 (유지)
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
-        function saveReflection(type) { playTapSound(); alert("오늘의 성찰 [" + type + "]이(가) 저장되었습니다!"); } // 임시 알림
+       function saveReflection(type) {
+            playTapSound();
+            if(type === '달콤쿠키') {
+                document.getElementById('ari-text').innerText = "와! 마법을 완벽하게 익혔군요! 달콤한 배움이에요! ✨";
+            } else {
+                document.getElementById('ari-text').innerText = "마법씨앗을 심었군요! 내일은 더 멋진 싹이 날 거예요! 🌱";
+            }
+        }
 
         // 숲속 테마 데이터
         const themes = [
@@ -143,7 +150,14 @@
         let isFirstTry = true; // 현재 문제에서 한 번도 안 틀렸는가?
 
         function generateProblem() {
-            document.getElementById('current-q-num').innerText = (questionCount + 1);
+            let emojis1 = "";
+            for(let i=0; i<num1; i++) emojis1 += `<span>${theme.emoji}</span>`;
+            document.getElementById('group1').innerHTML = emojis1;
+
+            let emojis2 = "";
+            for(let i=0; i<num2; i++) emojis2 += `<span>${theme.emoji}</span>`;
+            document.getElementById('group2').innerHTML = emojis2;
+            
             // 1. 합이 9를 넘지 않게 숫자 뽑기
             let num1 = Math.floor(Math.random() * 8) + 1; 
             let num2 = Math.floor(Math.random() * (9 - num1)) + 1;
@@ -191,9 +205,12 @@
                 document.getElementById('cookie-count').innerText = myCookies;
                 
                 // 첫 시도에 맞혔다면 점수 증가
-                if(isFirstTry) score++;
+                if(isFirstTry) {
+                    score++;
+                    document.getElementById('current-score').innerText = score;
+                }
                 
-                questionCount++; // 푼 문제 수 증가
+                questionCount++; // 푼 문제 수는 안 보이게 뒤에서만 셉니다.
 
                 // 10문제를 다 풀었는지 검사
                 if (questionCount >= 10) {
