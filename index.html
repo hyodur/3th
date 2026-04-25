@@ -22,10 +22,26 @@
         #stage4 { top: 57%; left: 65%; } 
         #stage5 { top: 67%; left: 83%; }
     </style>
+    /* 제목 이미지 위치 마법 */
+#map-title {
+    position: absolute;
+    top: 3%;         /* 위에서부터의 거리 (영어 제목 위치에 맞춰 조절하세요) */
+    left: 50%;       /* 가운데 정렬 시작 */
+    transform: translateX(-50%); /* 정확히 정중앙으로 맞추기 */
+    width: 55%;      /* 이미지 크기 (영어 제목을 가릴 정도로 조절하세요) */
+    height: auto;    /* 비율 유지 */
+    z-index: 10;     /* 아이콘들보다 뒤에 있되, 배경보다는 위에 있게! */
+    pointer-events: none; /* 이미지가 클릭을 방해하지 않도록 설정 */
+}
 </head>
 <body>
 
-    <div id="map-container"></div>
+    <div id="map-container">
+</div>
+
+<div id="map-container">
+    <img src="images/title.png" id="map-title" alt="아리의 마법 수학 훈련소">
+</div>
 
     <script>
         // 1. 현재 열려있는 가장 높은 단계 확인 (기본값은 1단계)
