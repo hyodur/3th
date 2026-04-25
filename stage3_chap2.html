@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>아리의 마법 훈련소 - 3단계 수식 뺄셈</title>
+    <style>
+        /* 글로벌 UI 및 수식 스타일 (2단계 수식과 통일감을 줍니다) */
+        body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; -webkit-touch-callout: none; user-select: none; }
+        #top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; box-sizing: border-box; }
+        .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .reflection-area { display: flex; gap: 10px; align-items: center; }
+        .reflection-btn { border: none; padding: 5px 12px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-sweet { background-color: #ffda79; color: #cc8e35; }
+        .btn-seed { background-color: #badc58; color: #6ab04c; }
+        .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
+        
+        #stage3-area { display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; margin-top: 10px; }
+        #progress-bar { background-color: #ffeaa7; color: #d35400; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; border: 2px solid #fdcb6e; }
+        #story-board { background-color: rgba(255, 255, 255, 0.9); border: 4px solid #00b894; border-radius: 20px; padding: 15px 25px; font-size: 22px; font-weight: bold; color: #2d3436; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        #equation-board { display: flex; align-items: center; justify-content: center; gap: 15px; font-size: 60px; font-weight: bold; background-color: rgba(255,255,255,0.85); padding: 30px 40px; border-radius: 30px; margin-bottom: 30px; border: 5px dashed #00b894; color: #2d3436; }
+        .math-num { color: #00b894; }
+        .math-sign { color: #0984e3; }
+        #answer-box { width: 90px; height: 90px; border: 5px solid #fdcb6e; background-color: white; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 60px; color: #e17055; box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+
+        #number-pad { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 80%; max-width: 400px; }
+        .num-btn { width: 55px; height: 55px; font-size: 28px; font-weight: bold; background-color: #ffeaa7; border: 3px solid #fdcb6e; border-radius: 15px; cursor: pointer; color: #d35400; box-shadow: 0 3px 0 #fdcb6e; }
+        
+        #bottom-area { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; margin-bottom: 20px; padding: 0 20px; box-sizing: border-box;}
+        #ari-character { width: 120px; height: 120px; object-fit: contain; }
+        #speech-bubble { background-color: white; border: 3px solid #00b894; border-radius: 15px; padding: 10px 20px; font-size: 18px; font-weight: bold; color: #2d3436; margin-left: 10px; max-width: 250px; }
+        #clear-btn { background-color: #74b9ff; color: white; border: none; padding: 15px 20px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        #submit-btn { background-color: #d63031; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; }
+
+        #result-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 300; justify-content: center; align-items: center; }
+        .result-box { background-color: white; padding: 40px; border-radius: 30px; text-align: center; border: 5px solid #00b894; }
+        .action-btn { background-color: #fd79a8; color: white; border: none; padding: 15px 30px; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="top-bar">
+        <button class="back-btn" onclick="location.href='index.html'">🗺️ 지도로 돌아가기</button>
+        <div class="reflection-area">
+            <button class="reflection-btn btn-sweet" onclick="saveReflection('달콤쿠키')">🍪 달콤쿠키</button>
+            <button class="reflection-btn btn-seed" onclick="saveReflection('마법씨앗')">🌱 마법씨앗</button>
+        </div>
+        <div class="cookie-wallet">🍪 내 쿠키: <span id="cookie-count">0</span>개</div>
+    </div>
+
+    <div id="stage3-area">
+        <div id="progress-bar" style="background-color: #ffeaa7; color: #d35400; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; border: 2px solid #fdcb6e;">
+            🌟 맞힌 문제: <span id="current-score">0</span> / 10
+        </div>
+        <div id="story-board">기호 뺄셈 마법에 도전해요!</div>
+        <div id="equation-board">
+            <span class="math-num" id="num1">0</span>
+            <span class="math-sign">-</span>
+            <span class="math-num" id="num2">0</span>
+            <span class="math-sign">=</span>
+            <div id="answer-box">?</div>
+        </div>
+        <div id="number-pad">
+            <script>for(let i=0; i<=9; i++) { document.write(`<button class="num-btn" onclick="selectNumber(${i})">${i}</button>`); }</script>
+        </div>
+    </div>
+
+    <div id="bottom-area">
+        <div id="ari-container"><img id="ari-character" src="images/ari_happy.png" alt="아리"><div id="speech-bubble"><span id="ari-text"></span></div></div>
+        <button id="clear-btn" onclick="clearAnswer()">🧹 비우기</button>
+        <button id="submit-btn" onclick="checkAnswer()">마법 부리기!</button>
+    </div>
+
+    <div id="result-overlay"><div class="result-box" id="result-content"></div></div>
+
+    <script>
+        // 기본 마법 사운드 및 로컬 저장소 로직
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        function playTone(freq, type, dur, start=0) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime + start); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(audioCtx.currentTime + start); osc.stop(audioCtx.currentTime + start + dur);
+        }
+        function playTapSound() { playTone(600, 'sine', 0.1); }
+        function playSuccessSound() { playTone(523.25, 'sine', 0.2); playTone(659.25, 'sine', 0.2, 0.1); playTone(783.99, 'sine', 0.4, 0.2); }
+        function playFailSound() { playTone(300, 'triangle', 0.3); playTone(200, 'triangle', 0.5, 0.4); }
+
+        let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+        document.getElementById('cookie-count').innerText = myCookies;
+
+        function sendToGAS(actionType, detailData) {
+            console.log(`[GAS 전송 대기] 종류: ${actionType}, 내용: ${detailData}`);
+        }
+
+        function saveReflection(type) {
+            playTapSound();
+            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "기호 뺄셈 마법도 척척이네요! ✨" : "차근차근 연습하면 뺄셈 왕이 될 거예요! 🌱";
+            sendToGAS('자기성찰', type);
+        }
+
+        let currentAns = 0, selectedNum = null, questionCount = 0, score = 0, isFirstTry = true;
+
+        function generateProblem() {
+            let n1 = Math.floor(Math.random() * 5) + 5; 
+            let n2 = Math.floor(Math.random() * (n1 + 1)); // 0을 빼는 경우도 포함!
+            currentAns = n1 - n2;
+            document.getElementById('num1').innerText = n1;
+            document.getElementById('num2').innerText = n2;
+            document.getElementById('ari-text').innerText = "이 뺄셈 식의 정답은 무엇일까요?";
+            clearAnswer();
+            isFirstTry = true;
+        }
+
+        function selectNumber(num) { playTapSound(); selectedNum = num; document.getElementById('answer-box').innerText = num; }
+        function clearAnswer() { playTapSound(); selectedNum = null; document.getElementById('answer-box').innerText = "?"; }
+
+        function checkAnswer() {
+            if (selectedNum === null) { document.getElementById('ari-text').innerText = "숫자 버튼을 먼저 눌러주세요!"; return; }
+            if (selectedNum === currentAns) {
+                playSuccessSound();
+                myCookies++; localStorage.setItem('ari_cookies', myCookies);
+                document.getElementById('cookie-count').innerText = myCookies;
+                if(isFirstTry) { score++; document.getElementById('current-score').innerText = score; }
+                questionCount++;
+                if (questionCount >= 10) showFinalResult();
+                else {
+                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    document.getElementById('ari-text').innerText = "딩동댕! 뺄셈 마법 성공!";
+                    setTimeout(generateProblem, 1500);
+                }
+            } else {
+                playFailSound(); isFirstTry = false;
+                document.getElementById('ari-character').src = 'images/ari_think.png';
+                document.getElementById('ari-text').innerText = "어라? 거꾸로 하나씩 세어볼까요?";
+            }
+        }
+
+        function showFinalResult() {
+            const overlay = document.getElementById('result-overlay');
+            const content = document.getElementById('result-content');
+            overlay.style.display = 'flex';
+
+            if (score >= 8) {
+                // 🌟 [핵심] 대망의 4단계 자물쇠 열쇠 발급!
+                localStorage.setItem('ari_stage4_unlocked', 'true');
+                sendToGAS('3단계_마스터', score);
+                content.innerHTML = `
+                    <h2>✨ 뺄셈 마스터 탄생! ✨</h2>
+                    <p>10문제 중 ${score}문제를 맞혔어요!<br>이제 공개수업 준비가 끝났습니다!</p>
+                    <p>지도로 돌아가서 <b>'0의 마법'</b> 자물쇠를 확인해 보세요!</p>
+                    <button class="action-btn" onclick="location.href='index.html'">지도로 돌아가기</button>
+                `;
+            } else {
+                sendToGAS('3단계_수식복습', score);
+                content.innerHTML = `
+                    <h2>🌱 뺄셈이 조금 더 필요해요 🌱</h2>
+                    <p>기호 뺄셈이 아직 낯설 수 있어요.<br>다시 그림 친구들과 연습해 볼까요?</p>
+                    <button class="action-btn" onclick="location.href='stage3.html'">그림 뺄셈으로 돌아가기</button>
+                `;
+            }
+        }
+        generateProblem();
+    </script>
+</body>
+</html>
