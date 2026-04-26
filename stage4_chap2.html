@@ -170,16 +170,17 @@
             overlay.style.display = 'flex';
 
             if (score >= 8) {
-                // 🌟 [핵심] 5단계 해금 열쇠 발급!
-                localStorage.setItem('ari_stage5_unlocked', 'true');
-                sendToGAS('4단계_마스터', score);
+        // 🌟 [핵심] 5단계 해금 열쇠를 브라우저 금고에 저장!
+        localStorage.setItem('ari_stage5_unlocked', 'true');
+        
+        sendToGAS('4단계_마스터', score);
 
-                content.innerHTML = `
-                    <h2>✨ 최고의 0의 마법사 ✨</h2>
-                    <p>10문제 중 ${score}문제를 맞혔어요!<br>0의 규칙을 완벽하게 이해했군요!</p>
-                    <p>이제 마지막 관문인 <b>'5단계 대마법사 도전'</b>이 열렸어요!</p>
-                    <button class="action-btn" style="background-color: #9b59b6;" onclick="location.href='index.html'">5단계 도전하러 가기!</button>
-                `;
+        content.innerHTML = `
+            <h2>✨ 최고의 0의 마법사 ✨</h2>
+            <p>10문제 중 ${score}문제를 맞혔어요!<br>0의 규칙을 완벽하게 이해했군요!</p>
+            <p>이제 마지막 관문인 <b>'5단계 대마법사 도전'</b>이 열렸어요!</p>
+            <button class="action-btn" style="background-color: #9b59b6;" onclick="location.href='index.html'">5단계 도전하러 가기!</button>
+        `;
             } else {
                 sendToGAS('4단계_수식복습', score);
 
