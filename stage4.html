@@ -102,7 +102,24 @@
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
 
-        function saveReflection(type) { playTapSound(); } // 생략
+       // ▼▼▼ 이 부분을 기존 코드 대신 덮어써 주세요 ▼▼▼
+
+        // 🌟 [GAS 통신 마법 주문] (우체부)
+        function sendToGAS(actionType, detailData) {
+            console.log(`[GAS 전송 대기] 종류: ${actionType}, 내용: ${detailData}`);
+        }
+
+        // 🌟 성찰 버튼 반응 살리기!
+        function saveReflection(type) { 
+            playTapSound(); 
+            if(type === '달콤쿠키') {
+                document.getElementById('ari-text').innerText = "0의 마법도 문제없군요! 달콤한 배움이에요! ✨";
+            } else {
+                document.getElementById('ari-text').innerText = "0이 조금 헷갈리나요? 천천히 다시 보면 할 수 있어요! 🌱";
+            }
+            // 4단계 그림 데이터 전송!
+            sendToGAS('자기성찰_4단계_그림', type);
+        }
 
         let currentAns = 0; let selectedNum = null; let questionCount = 0; let score = 0; let isFirstTry = true; 
 
@@ -166,18 +183,47 @@
         function selectNumber(num) { playTapSound(); selectedNum = num; document.getElementById('answer-box').innerText = num; }
         function clearAnswer() { playTapSound(); selectedNum = null; document.getElementById('answer-box').innerText = "?"; }
 
+        // ▼▼▼ checkAnswer 함수를 통째로 이걸로 바꿔주세요 ▼▼▼
         function checkAnswer() {
-            if (selectedNum === null) return;
+            // 버튼을 안 눌렀을 때
+            if (selectedNum === null) {
+                document.getElementById('ari-text').innerText = "숫자 버튼을 먼저 눌러주세요!";
+                return; 
+            }
+            
+            // 정답일 때
             if (selectedNum === currentAns) {
-                playSuccessSound(); myCookies++; localStorage.setItem('ari_cookies', myCookies); document.getElementById('cookie-count').innerText = myCookies;
-                if(isFirstTry) { score++; document.getElementById('current-score').innerText = score; }
+                playSuccessSound(); 
+                myCookies++; 
+                localStorage.setItem('ari_cookies', myCookies); 
+                document.getElementById('cookie-count').innerText = myCookies;
+                
+                if(isFirstTry) { 
+                    score++; 
+                    document.getElementById('current-score').innerText = score; 
+                }
                 questionCount++; 
 
-                if (questionCount >= 10) showFinalResult();
-                else { setTimeout(() => generateProblem(), 1500); }
+                if (questionCount >= 10) {
+                    showFinalResult();
+                } else {
+                    // 정답 리액션 추가!
+                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    document.getElementById('ari-text').innerText = "정답이에요! 0의 비밀을 잘 찾았네요! 딩동댕 🎵";
+                    setTimeout(() => generateProblem(), 1500); 
+                }
             } else {
-                playFailSound(); isFirstTry = false;
+                // 오답일 때 리액션 추가!
+                playFailSound(); 
+                isFirstTry = false;
                 document.getElementById('ari-character').src = 'images/ari_think.png';
+                document.getElementById('ari-text').innerText = "어라? 0이 무슨 뜻인지 다시 한번 그림을 볼까요?";
+                
+                // 2초 뒤에 다시 고르라고 격려하기
+                setTimeout(() => {
+                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    document.getElementById('ari-text').innerText = "다시 한번 정답을 골라주세요!";
+                }, 2000);
             }
         }
 
