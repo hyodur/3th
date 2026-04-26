@@ -209,7 +209,13 @@
 
             // 버튼 눌렀을 때의 효과 (잠시 강조)
             console.log("선생님께 보낼 데이터:", reflectionData);
-        }
+            sendToGAS('자기성찰_1단계', type); 
+}
+        // 🌟 [GAS 통신 마법 주문] - 1단계에도 추가!
+function sendToGAS(actionType, detailData) {
+    console.log(`[GAS 전송 대기] 종류: ${actionType}, 내용: ${detailData}`);
+    // 나중에 여기에 실제 주소를 넣으면 1단계 데이터도 날아갑니다!
+}
         function checkAnswer() {
             let success = false;
             if(problemType === "모으기") {
@@ -225,10 +231,13 @@
                 if (myCookies >= 30) {
                     // '2단계 열림' 열쇠를 금고에 저장합니다.
                     localStorage.setItem('ari_stage2_unlocked', 'true');
+                    
+                    // ▼▼▼ 여기에 3번(1단계 마스터 기록) 코드를 쏙 넣어주세요! ▼▼▼
+                    sendToGAS('1단계_마스터', '쿠키30개달성');
                 }
                 document.getElementById('cookie-popup').style.display = 'block';
                 setTimeout(() => { document.getElementById('cookie-popup').style.display = 'none'; makeProblemStage1(); }, 1500);
-            }  else {
+            } else {
                 // 오답 시 로직: 표정 바꾸고 2초 뒤에 복구 (문제는 안 바뀜!)
                 playFailSound(); 
                 document.getElementById('ari-character').src = 'images/ari_think.png';
