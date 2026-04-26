@@ -166,14 +166,29 @@
             const content = document.getElementById('result-content');
             overlay.style.display = 'flex';
 
-            sendToGAS('5단계_졸업', score);
+            if (score >= 8) {
+                // 🌟 8점 이상: 대마법사 졸업!
+                sendToGAS('5단계_마스터', score);
 
-            content.innerHTML = `
-                <h2>👑 전설의 대마법사 👑</h2>
-                <p>10문제 중 ${score}문제를 맞혔어요!<br>덧셈과 뺄셈 마법을 모두 마스터했습니다!</p>
-                <p>이제 모은 쿠키를 가지고<br><b>마법 상점</b>으로 쇼핑을 떠나볼까요?</p>
-                <button class="action-btn" onclick="location.href='index.html'">지도로 돌아가기</button>
-            `;
+                content.innerHTML = `
+                    <h2>👑 전설의 대마법사 👑</h2>
+                    <p>10문제 중 ${score}문제를 맞혔어요!<br>덧셈과 뺄셈 마법을 모두 마스터했습니다!</p>
+                    <p>이제 모은 쿠키를 가지고<br><b>마법 상점</b>으로 쇼핑을 떠나볼까요?</p>
+                    <button class="action-btn" onclick="location.href='index.html'">지도로 돌아가기 🗺️</button>
+                `;
+            } else {
+                // 🌟 7점 이하: 자기주도적 선택 복습!
+                sendToGAS('5단계_복습필요', score);
+
+                content.innerHTML = `
+                    <h2>🌱 어떤 마법이 더 필요할까요? 🌱</h2>
+                    <p>덧셈과 뺄셈이 섞여 있어서 살짝 헷갈렸죠?<br>내가 더 연습하고 싶은 기호 훈련소를 골라보세요!</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                        <button class="action-btn" style="background-color: #0984e3; margin-top: 0;" onclick="location.href='stage2_chap2.html'">➕ 덧셈 기호 복습하러 가기</button>
+                        <button class="action-btn" style="background-color: #d63031; margin-top: 0;" onclick="location.href='stage3_chap2.html'">➖ 뺄셈 기호 복습하러 가기</button>
+                    </div>
+                `;
+            }
         }
 
         generateProblem();
