@@ -127,7 +127,7 @@
         function saveReflection(type) {
             playTapSound();
             document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "0의 마법도 완벽하군요! ✨" : "0의 규칙을 조금 더 생각해 봐요! 🌱";
-            sendToGAS('자기성찰_4단계', type); 
+            sendToGAS('자기성찰_4단계(수식)', type); 
         }
 
         let currentAns = 0; let selectedNum = null; let questionCount = 0; let score = 0; let isFirstTry = true; 
