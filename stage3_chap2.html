@@ -120,7 +120,7 @@
         function saveReflection(type) {
             playTapSound();
             document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "기호 뺄셈 마법도 척척이네요! ✨" : "차근차근 연습하면 뺄셈 왕이 될 거예요! 🌱";
-            sendToGAS('자기성찰 3단계', type);
+            sendToGAS('자기성찰 3단계(수식)', type);
         }
 
         let currentAns = 0, selectedNum = null, questionCount = 0, score = 0, isFirstTry = true;
