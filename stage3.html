@@ -102,14 +102,27 @@
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
 
+        function sendToGAS(actionType, detailData) {
+            // 방금 물어본 아이의 이름을 가져옵니다.
+            let studentName = localStorage.getItem('ari_student_name') || "이름모를 마법사";
+            
+            // 선생님의 진짜 GAS 주소!
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz-Rw6jDy0t6gibrPSh6TXE5LuYsDs466mqCWtL50_n3XUe8xAQJyc0GsI8J7oMW5N6cw/exec';
+            
+            // 주소 뒤에 student(이름) 데이터를 추가해서 쏩니다!
+            const url = `${scriptURL}?student=${encodeURIComponent(studentName)}&action=${encodeURIComponent(actionType)}&detail=${encodeURIComponent(detailData)}`;
+
+            fetch(url, { mode: 'no-cors' })
+                .then(() => console.log(`[시트 기록 완료] ${studentName} - ${actionType}: ${detailData}`))
+                .catch(error => console.log('[기록 실패]', error));
+        }
+
         function saveReflection(type) {
             playTapSound();
-            if(type === '달콤쿠키') {
-                document.getElementById('ari-text').innerText = "와! 뺄셈 마법도 완벽해요! ✨";
-            } else {
-                document.getElementById('ari-text').innerText = "조금씩 연습하면 더 잘할 수 있어요! 🌱";
-            }
+            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "기호 뺄셈 마법도 척척이네요! ✨" : "차근차근 연습하면 뺄셈 왕이 될 거예요! 🌱";
+            sendToGAS('자기성찰 3단계(그림)', type);
         }
+
 
         // 🌟 선생님이 고르신 3가지 뺄셈 테마 적용!
         const themes = [
