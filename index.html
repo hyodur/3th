@@ -43,6 +43,19 @@
         </div>
 
     <script>
+        <script>
+    // 🌟 [입구 출석부] - 들어올 때 딱 한 번만 이름 물어보기!
+    let myName = localStorage.getItem('ari_student_name');
+    if (!myName) {
+        myName = prompt("꼬마 마법사님의 이름을 알려주세요! (예: 1번 김아리)");
+        if(myName) {
+            localStorage.setItem('ari_student_name', myName);
+        } else {
+            localStorage.setItem('ari_student_name', "익명 마법사");
+        }
+    }
+    console.log("환영합니다, " + localStorage.getItem('ari_student_name') + "님!");
+</script>
         // 1. 현재 열려있는 가장 높은 단계 확인 (기본값은 1단계)
        let maxUnlockedStage = parseInt(localStorage.getItem('ari_unlocked_stage')) || 1;
         // 🌟 [핵심 수정] 1단계(game.html)에서 쿠키 30개를 모아 'ari_stage2_unlocked'가 true가 되었다면?
