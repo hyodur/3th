@@ -106,19 +106,23 @@
 
         // 🌟 [GAS 통신 마법 주문] (우체부)
         function sendToGAS(actionType, detailData) {
-            console.log(`[GAS 전송 대기] 종류: ${actionType}, 내용: ${detailData}`);
-        }
+            // 방금 물어본 아이의 이름을 가져옵니다.
+            let studentName = localStorage.getItem('ari_student_name') || "이름모를 마법사";
+            
+            // 선생님의 진짜 GAS 주소!
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz-Rw6jDy0t6gibrPSh6TXE5LuYsDs466mqCWtL50_n3XUe8xAQJyc0GsI8J7oMW5N6cw/exec';
+            
+            // 주소 뒤에 student(이름) 데이터를 추가해서 쏩니다!
+            const url = `${scriptURL}?student=${encodeURIComponent(studentName)}&action=${encodeURIComponent(actionType)}&detail=${encodeURIComponent(detailData)}`;
 
-        // 🌟 성찰 버튼 반응 살리기!
-        function saveReflection(type) { 
-            playTapSound(); 
-            if(type === '달콤쿠키') {
-                document.getElementById('ari-text').innerText = "0의 마법도 문제없군요! 달콤한 배움이에요! ✨";
-            } else {
-                document.getElementById('ari-text').innerText = "0이 조금 헷갈리나요? 천천히 다시 보면 할 수 있어요! 🌱";
-            }
-            // 4단계 그림 데이터 전송!
-            sendToGAS('자기성찰_4단계_그림', type);
+            fetch(url, { mode: 'no-cors' })
+                .then(() => console.log(`[시트 기록 완료] ${studentName} - ${actionType}: ${detailData}`))
+                .catch(error => console.log('[기록 실패]', error));
+        }
+        function saveReflection(type) {
+            playTapSound();
+            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "0의 마법도 완벽하군요! ✨" : "0의 규칙을 조금 더 생각해 봐요! 🌱";
+            sendToGAS('자기성찰_4단계(그림)', type); 
         }
 
         let currentAns = 0; let selectedNum = null; let questionCount = 0; let score = 0; let isFirstTry = true; 
