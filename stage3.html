@@ -102,6 +102,7 @@
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
 
+         // 🌟 [GAS 통신 마법 주문] (우체부)
         function sendToGAS(actionType, detailData) {
             // 방금 물어본 아이의 이름을 가져옵니다.
             let studentName = localStorage.getItem('ari_student_name') || "이름모를 마법사";
@@ -116,11 +117,10 @@
                 .then(() => console.log(`[시트 기록 완료] ${studentName} - ${actionType}: ${detailData}`))
                 .catch(error => console.log('[기록 실패]', error));
         }
-
         function saveReflection(type) {
             playTapSound();
-            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "기호 뺄셈 마법도 척척이네요! ✨" : "차근차근 연습하면 뺄셈 왕이 될 거예요! 🌱";
-            sendToGAS('자기성찰 3단계(그림)', type);
+            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "0의 마법도 완벽하군요! ✨" : "0의 규칙을 조금 더 생각해 봐요! 🌱";
+            sendToGAS('자기성찰_3단계(그림)', type); 
         }
 
 
