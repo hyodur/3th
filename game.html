@@ -86,10 +86,22 @@
 
     <script>
 
-        // 🌟 1. 배경 마법 (여기에 딱!) : 화면 열리자마자 바로 실행됨
-    let savedBg = localStorage.getItem('current_bg') || 'bg_forest'; 
+        // 1. 배경 마법
+    let savedBg = localStorage.getItem('current_bg') || 'bg_flower'; 
     document.body.style.backgroundImage = `url('images/${savedBg}.png')`;
-        
+
+    // 2. [추가] 캐릭터 옷 마법 (입장하자마자 옷 갈아입기)
+    let currentSkin = localStorage.getItem('current_skin') || 'ari';
+    let ariImgElement = document.getElementById('ari-image'); // 아리 이미지 태그 찾기
+
+    if (ariImgElement) {
+        if (currentSkin === 'ari') {
+            ariImgElement.src = "images/ari_happy.png";
+        } else {
+            // 상점에서 산 옷이라면 1번(웃는 모습)으로 미리 보여주기
+            ariImgElement.src = "images/" + currentSkin + "1.png";
+        }
+    }
         // 🌟 [이름 기억하기 마법] - 없으면 물어보고, 있으면 넘어감!
         let myName = localStorage.getItem('ari_student_name');
         if (!myName) {
