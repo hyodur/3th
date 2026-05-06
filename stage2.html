@@ -105,7 +105,41 @@
     </div>
 
     <script>
-        // 사운드 마법 (유지)
+        // 🌟 1. 배경 마법 (입장하자마자 배경 깔기)
+        let savedBg = localStorage.getItem('current_bg') || 'bg_forest'; 
+        document.body.style.backgroundImage = `url('images/${savedBg}.png')`;
+
+        // 🌟 2. 만능 옷장 함수 (상점 아이템 반영)
+        function setAriImage(state) {
+            let currentSkin = localStorage.getItem('current_skin') || 'ari';
+            let ariImg = document.getElementById('ari-character');
+            if (!ariImg) return;
+            
+            if (currentSkin === 'ari') {
+                if (state === 'happy') ariImg.src = 'images/ari_happy.png';
+                else if (state === 'sad') ariImg.src = 'images/ari_sad.png';
+                else if (state === 'think') ariImg.src = 'images/ari_think.png';
+            } else {
+                if (state === 'happy') ariImg.src = 'images/' + currentSkin + '1.png';
+                else ariImg.src = 'images/' + currentSkin + '2.png';
+            }
+        }
+
+        // 시작할 때 옷 입혀주기
+        setAriImage('happy');
+
+        // [이름 기억하기 마법]
+        let myName = localStorage.getItem('ari_student_name');
+        if (!myName) {
+            myName = prompt("꼬마 마법사님의 이름을 알려주세요! (예: 1번 김아리)");
+            if(myName) {
+                localStorage.setItem('ari_student_name', myName);
+            } else {
+                myName = "익명 마법사"; 
+            }
+        }
+
+        // 사운드 마법
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         function playTone(freq, type, dur, start=0) {
@@ -119,36 +153,38 @@
         function playSuccessSound() { playTone(523.25, 'sine', 0.2); playTone(659.25, 'sine', 0.2, 0.1); playTone(783.99, 'sine', 0.4, 0.2); }
         function playFailSound() { playTone(300, 'triangle', 0.3); playTone(200, 'triangle', 0.5, 0.4); }
 
-        // 쿠키 지갑 및 성찰 (유지)
+        // 쿠키 지갑 세팅
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
-       function sendToGAS(actionType, detailData) {
-            // 방금 물어본 아이의 이름을 가져옵니다.
+
+        function sendToGAS(actionType, detailData) {
             let studentName = localStorage.getItem('ari_student_name') || "이름모를 마법사";
-            
-            // 선생님의 진짜 GAS 주소!
             const scriptURL = 'https://script.google.com/macros/s/AKfycbz-Rw6jDy0t6gibrPSh6TXE5LuYsDs466mqCWtL50_n3XUe8xAQJyc0GsI8J7oMW5N6cw/exec';
-            
-            // 주소 뒤에 student(이름) 데이터를 추가해서 쏩니다!
             const url = `${scriptURL}?student=${encodeURIComponent(studentName)}&action=${encodeURIComponent(actionType)}&detail=${encodeURIComponent(detailData)}`;
 
             fetch(url, { mode: 'no-cors' })
                 .then(() => console.log(`[시트 기록 완료] ${studentName} - ${actionType}: ${detailData}`))
                 .catch(error => console.log('[기록 실패]', error));
         }
+
+        // 🌟 달콤쿠키/마법씨앗 (쿠키 적립 & 옷장 반영)
         function saveReflection(type) {
             playTapSound();
             if(type === '달콤쿠키') {
                 document.getElementById('ari-text').innerText = "와! 마법을 완벽하게 익혔군요! 달콤한 배움이에요! ✨";
+                setAriImage('happy');
+                
+                // 쿠키 1개 보너스!
+                let cookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+                localStorage.setItem('ari_cookies', cookies + 1);
+                document.getElementById('cookie-count').innerText = cookies + 1;
             } else {
                 document.getElementById('ari-text').innerText = "마법씨앗을 심었군요! 내일은 더 멋진 싹이 날 거예요! 🌱";
+                setAriImage('sad');
             }
-            // 성찰 기록도 나중에 GAS로 쏠 겁니다!
             sendToGAS('자기성찰_2단계(그림)', type);
         }
 
-        // 숲속 테마 데이터
-        // ▼▼▼ 기존 themes 배열을 찾아서 아래 코드로 싹 덮어써 주세요! ▼▼▼
         const themes = [
             { emoji: '🌸', name: '예쁜 꽃이', verb: '피어있어요', addVerb: '더 피어났어요', unit: '송이' },
             { emoji: '🦋', name: '팔랑팔랑 나비가', verb: '날아왔어요', addVerb: '더 날아왔어요', unit: '마리' },
@@ -157,29 +193,22 @@
             { emoji: '🍄', name: '반짝이 버섯이', verb: '자라났어요', addVerb: '더 자라났어요', unit: '개' }
         ];
 
-        // 게임 로직 변수
         let currentAns = 0;
         let selectedNum = null;
-        
-        // ⭐️ 핵심 진단 시스템 변수 ⭐️
-        let questionCount = 0; // 몇 문제 풀었는지 (최대 10)
-        let score = 0; // 첫 시도 정답 개수
-        let isFirstTry = true; // 현재 문제에서 한 번도 안 틀렸는가?
+        let questionCount = 0; 
+        let score = 0; 
+        let isFirstTry = true; 
 
         function generateProblem() {
-            // 1. 합이 9를 넘지 않게 숫자 뽑기
             let num1 = Math.floor(Math.random() * 8) + 1; 
             let num2 = Math.floor(Math.random() * (9 - num1)) + 1;
             currentAns = num1 + num2;
             
-            // 2. 랜덤 숲속 테마 뽑기
             let theme = themes[Math.floor(Math.random() * themes.length)];
             
-            // 3. 이야기 만들기
-           document.getElementById('story-board').innerText = `숲속에 ${theme.name} ${num1}${theme.unit} ${theme.verb}. ${num2}${theme.unit}가 ${theme.addVerb}. 모두 몇 ${theme.unit}일까요?`;
+            document.getElementById('story-board').innerText = `숲속에 ${theme.name} ${num1}${theme.unit} ${theme.verb}. ${num2}${theme.unit}가 ${theme.addVerb}. 모두 몇 ${theme.unit}일까요?`;
             document.getElementById('ari-text').innerText = "그림을 보고 아래 숫자 버튼을 눌러 정답을 골라주세요!";
             
-            // 4. 이모지 그리기 (바둑판 정렬 마법 적용!)
             let emojis1 = "";
             for(let i=0; i<num1; i++) emojis1 += `<span>${theme.emoji}</span>`;
             document.getElementById('group1').innerHTML = emojis1;
@@ -188,9 +217,11 @@
             for(let i=0; i<num2; i++) emojis2 += `<span>${theme.emoji}</span>`;
             document.getElementById('group2').innerHTML = emojis2;
             
-            // 5. 입력창 초기화
             clearAnswer();
-            isFirstTry = true; // 새 문제니까 첫 시도로 리셋!
+            isFirstTry = true; 
+            
+            // 문제 낼 때 표정 초기화
+            setAriImage('happy');
         }
 
         function selectNumber(num) {
@@ -212,36 +243,32 @@
             }
 
             if (selectedNum === currentAns) {
-                // 정답!
                 playSuccessSound();
                 myCookies++; 
                 localStorage.setItem('ari_cookies', myCookies);
                 document.getElementById('cookie-count').innerText = myCookies;
                 
-                // 첫 시도에 맞혔다면 점수 증가
                 if(isFirstTry) {
                     score++;
                     document.getElementById('current-score').innerText = score;
                 }
                 
-                questionCount++; // 푼 문제 수는 안 보이게 뒤에서만 셉니다.
+                questionCount++; 
 
-                // 10문제를 다 풀었는지 검사
                 if (questionCount >= 10) {
                     showFinalResult();
                 } else {
-                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    setAriImage('happy');
                     document.getElementById('ari-text').innerText = "정답이에요! 아주 멋져요!";
-                    setTimeout(() => generateProblem(), 1500); // 1.5초 뒤 다음 문제
+                    setTimeout(() => generateProblem(), 1500); 
                 }
             } else {
-                // 오답!
                 playFailSound();
-                isFirstTry = false; // 틀렸으니 첫 시도 정답은 날아감
-                document.getElementById('ari-character').src = 'images/ari_think.png';
+                isFirstTry = false; 
+                setAriImage('think');
                 document.getElementById('ari-text').innerText = "어라? 숲속 친구들을 다시 한번 천천히 세어볼까요?";
                 setTimeout(() => {
-                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    setAriImage('happy');
                     document.getElementById('ari-text').innerText = "그림을 보고 다시 정답을 골라주세요!";
                 }, 2000);
             }
@@ -269,7 +296,6 @@
             }
         }
 
-        // 게임 시작!
         generateProblem();
     </script>
 </body>
