@@ -85,13 +85,17 @@
 
     document.getElementById('my-cookies').innerText = cookies;
 
+   // 🌟 캐릭터 진열대에 '기본 아리' 추가 (가격은 0원!)
     const skins = [
+        { id: 'ari', name: '기본 꼬마 아리', price: 0, img: 'ari_happy.png' }, // 이 줄을 추가!
         { id: '봄', name: '봄 마법사 세트', price: 30, img: '봄1.png' },
         { id: '별', name: '별 마법사 세트', price: 50, img: '별1.png' },
         { id: '토끼', name: '토끼 마법사 세트', price: 70, img: '토끼1.png' }
     ];
 
+    // 🌟 배경 진열대에 '기본 배경' 추가 
     const bgs = [
+        { id: 'bg_flower', name: '기본 꽃밭', price: 0, img: 'bg_flower.png' }, // 이 줄을 추가! (forest가 기본이면 bg_forest로!)
         { id: '버섯배경', name: '말랑 버섯 숲', price: 30, img: '버섯배경.png' },
         { id: '꽃밭배경', name: '향기 꽃밭', price: 30, img: '꽃밭배경.png' },
         { id: '호숫가배경', name: '반짝 호숫가', price: 30, img: '호숫가배경.png' }
