@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아리의 마법 숲 지도</title>
     <style>
+
+        /* 🌟 마법 상점 입장 버튼 스타일 */
+        .store-entrance-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #db2777;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+        .store-entrance-btn:hover {
+            transform: scale(1.1);
+        }
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fbebf6; font-family: 'Malgun Gothic', sans-serif; }
         #map-container { position: relative; width: 95vw; max-width: 800px; aspect-ratio: 16 / 9; background-image: url('images/map_background.jpg'); background-size: 100% 100%; background-repeat: no-repeat; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         
@@ -133,5 +153,6 @@
             mapContainer.appendChild(btn);
         });
     </script>
+    <a href="store.html" class="store-entrance-btn">🛍️ 마법 상점 가기</a>
 </body>
 </html>
