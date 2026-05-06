@@ -85,6 +85,11 @@
     <div id="cookie-popup"><img src="images/success_cookie_popup.png" alt="정답 쿠키"></div>
 
     <script>
+
+        // 🌟 1. 배경 마법 (여기에 딱!) : 화면 열리자마자 바로 실행됨
+    let savedBg = localStorage.getItem('current_bg') || 'bg_forest'; 
+    document.body.style.backgroundImage = `url('images/${savedBg}.png')`;
+        
         // 🌟 [이름 기억하기 마법] - 없으면 물어보고, 있으면 넘어감!
         let myName = localStorage.getItem('ari_student_name');
         if (!myName) {
@@ -205,6 +210,24 @@
                 document.getElementById('ari-text').innerText = "마법씨앗을 심었군요! 내일은 더 멋진 싹이 날 거예요! 🌱";
             }
 
+            // [여기에 추가!] 옷 갈아입히기
+        let currentSkin = localStorage.getItem('current_skin') || 'ari';
+        let isSuccess = (type === '달콤쿠키');
+        let finalImg = "";
+
+        if (currentSkin === 'ari') {
+            finalImg = isSuccess ? "ari_happy.png" : "ari_sad.png"; 
+        } else {
+            finalImg = isSuccess ? currentSkin + "1.png" : currentSkin + "2.png"; 
+        }
+        document.getElementById('ari-image').src = "images/" + finalImg;
+
+        // [여기에 추가!] 쿠키 주기
+        if (isSuccess) {
+            let cookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+            localStorage.setItem('ari_cookies', cookies + 1);
+        }
+            
             // 3. 데이터 저장 (나중에 대시보드 연동을 위해 localStorage에 보관)
             const reflectionData = {
                 stage: stage,
