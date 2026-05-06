@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아리의 마법 상점 ✨</title>
+    <style>
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal; font-style: normal;
+        }
+        body {
+            font-family: 'GmarketSansMedium', sans-serif;
+            background-color: #fdf2f8; margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .header {
+            text-align: center; background: white; padding: 20px;
+            border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 90%; max-width: 600px; margin-bottom: 20px;
+        }
+        .cookie-status { font-size: 1.2rem; color: #db2777; margin-top: 10px; }
+        
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { 
+            padding: 10px 20px; background: #fbcfe8; border-radius: 15px; 
+            cursor: pointer; transition: 0.3s;
+        }
+        .tab.active { background: #db2777; color: white; }
+
+        .item-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px; width: 95%; max-width: 800px;
+        }
+        .item-card {
+            background: white; border-radius: 20px; padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;
+            transition: transform 0.2s;
+        }
+        .item-card:hover { transform: translateY(-5px); }
+        .item-card img { width: 100px; height: 100px; object-fit: contain; margin-bottom: 10px; }
+        .item-name { font-weight: bold; margin-bottom: 5px; }
+        .item-price { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
+        
+        button {
+            padding: 8px 15px; border: none; border-radius: 10px;
+            cursor: pointer; font-family: inherit; font-size: 0.9rem;
+        }
+        .buy-btn { background: #f472b6; color: white; }
+        .equip-btn { background: #10b981; color: white; }
+        .current-btn { background: #94a3b8; color: white; cursor: default; }
+        
+        .back-btn {
+            margin-top: 30px; padding: 15px 30px; background: #be185d;
+            color: white; text-decoration: none; border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>아리의 마법 상점 ✨</h1>
+    <div class="cookie-status">🍪 내 달콤쿠키: <span id="my-cookies">0</span>개</div>
+</div>
+
+<div class="tab-container">
+    <div class="tab active" onclick="showTab('skins')">마법 옷</div>
+    <div class="tab" onclick="showTab('bgs')">배경</div>
+</div>
+
+<div id="skins-grid" class="item-grid"></div>
+
+<div id="bgs-grid" class="item-grid" style="display:none;"></div>
+
+<a href="index.html" class="back-btn">마법 지도로 돌아가기</a>
+
+<script>
+    // 🌟 초기 데이터 세팅
+    let cookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+    let ownedSkins = JSON.parse(localStorage.getItem('owned_skins')) || ['ari']; // 기본 캐릭터
+    let ownedBgs = JSON.parse(localStorage.getItem('owned_bgs')) || ['bg_default']; // 기본 배경
+    let currentSkin = localStorage.getItem('current_skin') || 'ari';
+    let currentBg = localStorage.getItem('current_bg') || 'bg_default';
+
+    document.getElementById('my-cookies').innerText = cookies;
+
+    const skins = [
+        { id: '봄', name: '봄 마법사 세트', price: 30, img: '봄1.png' },
+        { id: '별', name: '별 마법사 세트', price: 50, img: '별1.png' },
+        { id: '토끼', name: '토끼 마법사 세트', price: 70, img: '토끼1.png' }
+    ];
+
+    const bgs = [
+        { id: '버섯배경', name: '말랑 버섯 숲', price: 30, img: '버섯배경.png' },
+        { id: '꽃밭배경', name: '향기 꽃밭', price: 30, img: '꽃밭배경.png' },
+        { id: '호숫가배경', name: '반짝 호숫가', price: 30, img: '호숫가배경.png' }
+    ];
+
+    function showTab(type) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        if(type === 'skins') {
+            document.getElementById('skins-grid').style.display = 'grid';
+            document.getElementById('bgs-grid').style.display = 'none';
+        } else {
+            document.getElementById('skins-grid').style.display = 'none';
+            document.getElementById('bgs-grid').style.display = 'grid';
+        }
+    }
+
+    function renderItems() {
+        const skinsGrid = document.getElementById('skins-grid');
+        skinsGrid.innerHTML = '';
+        skins.forEach(item => {
+            const isOwned = ownedSkins.includes(item.id);
+            const isEquipped = currentSkin === item.id;
+            skinsGrid.innerHTML += `
+                <div class="item-card">
+                    <img src="images/${item.img}" alt="${item.name}">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">${isOwned ? '보유 중' : '🍪 ' + item.price + '개'}</div>
+                    ${renderButton(item, 'skin', isOwned, isEquipped)}
+                </div>
+            `;
+        });
+
+        const bgsGrid = document.getElementById('bgs-grid');
+        bgsGrid.innerHTML = '';
+        bgs.forEach(item => {
+            const isOwned = ownedBgs.includes(item.id);
+            const isEquipped = currentBg === item.id;
+            bgsGrid.innerHTML += `
+                <div class="item-card">
+                    <img src="images/${item.img}" alt="${item.name}">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">${isOwned ? '보유 중' : '🍪 ' + item.price + '개'}</div>
+                    ${renderButton(item, 'bg', isOwned, isEquipped)}
+                </div>
+            `;
+        });
+    }
+
+    function renderButton(item, type, isOwned, isEquipped) {
+        if (isEquipped) return `<button class="current-btn">착용 중</button>`;
+        if (isOwned) return `<button class="equip-btn" onclick="equip('${item.id}', '${type}')">착용하기</button>`;
+        return `<button class="buy-btn" onclick="buy('${item.id}', ${item.price}, '${type}')">구매하기</button>`;
+    }
+
+    function buy(id, price, type) {
+        if (cookies < price) {
+            alert("달콤쿠키가 부족해요! 마법 훈련을 더 하고 오세요! 🍪");
+            return;
+        }
+        if (confirm(`정말 구매할까요? (달콤쿠키 ${price}개)`)) {
+            cookies -= price;
+            localStorage.setItem('ari_cookies', cookies);
+            if(type === 'skin') {
+                ownedSkins.push(id);
+                localStorage.setItem('owned_skins', JSON.stringify(ownedSkins));
+            } else {
+                ownedBgs.push(id);
+                localStorage.setItem('owned_bgs', JSON.stringify(ownedBgs));
+            }
+            document.getElementById('my-cookies').innerText = cookies;
+            renderItems();
+        }
+    }
+
+    function equip(id, type) {
+        if(type === 'skin') {
+            localStorage.setItem('current_skin', id);
+            currentSkin = id;
+        } else {
+            localStorage.setItem('current_bg', id);
+            currentBg = id;
+        }
+        renderItems();
+        alert("마법이 적용되었습니다! ✨");
+    }
+
+    renderItems();
+</script>
+</body>
+</html>
