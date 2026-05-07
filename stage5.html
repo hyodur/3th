@@ -79,16 +79,40 @@
     <div id="result-overlay"><div class="result-box" id="result-content"></div></div>
 
     <script>
-        // 🌟 [이름 기억하기 마법] - 없으면 물어보고, 있으면 넘어감!
+        // 🌟 1. 배경 마법
+        let savedBg = localStorage.getItem('current_bg') || 'bg_forest'; 
+        document.body.style.backgroundImage = `url('images/${savedBg}.png')`;
+
+        // 🌟 2. 만능 옷장 함수
+        function setAriImage(state) {
+            let currentSkin = localStorage.getItem('current_skin') || 'ari';
+            let ariImg = document.getElementById('ari-character');
+            if (!ariImg) return;
+            
+            if (currentSkin === 'ari') {
+                if (state === 'happy') ariImg.src = 'images/ari_happy.png';
+                else if (state === 'sad') ariImg.src = 'images/ari_sad.png';
+                else if (state === 'think') ariImg.src = 'images/ari_think.png';
+            } else {
+                if (state === 'happy') ariImg.src = 'images/' + currentSkin + '1.png';
+                else ariImg.src = 'images/' + currentSkin + '2.png';
+            }
+        }
+
+        // 입장하자마자 위풍당당하게 상점 옷 장착!
+        setAriImage('happy');
+
+        // 🌟 [이름 기억하기 마법]
         let myName = localStorage.getItem('ari_student_name');
         if (!myName) {
             myName = prompt("꼬마 마법사님의 이름을 알려주세요! (예: 1번 김아리)");
             if(myName) {
                 localStorage.setItem('ari_student_name', myName);
             } else {
-                myName = "익명 마법사"; // 취소를 누를 경우
+                myName = "익명 마법사"; 
             }
         }
+
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         function playTone(freq, type, dur, start=0) {
@@ -105,15 +129,10 @@
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
 
-        // 🌟 [GAS 통신 마법 주문] - 이름표 붙여서 보내기!
+        // 🌟 [GAS 통신 마법 주문]
         function sendToGAS(actionType, detailData) {
-            // 방금 물어본 아이의 이름을 가져옵니다.
             let studentName = localStorage.getItem('ari_student_name') || "이름모를 마법사";
-            
-            // 선생님의 진짜 GAS 주소!
             const scriptURL = 'https://script.google.com/macros/s/AKfycbz-Rw6jDy0t6gibrPSh6TXE5LuYsDs466mqCWtL50_n3XUe8xAQJyc0GsI8J7oMW5N6cw/exec';
-            
-            // 주소 뒤에 student(이름) 데이터를 추가해서 쏩니다!
             const url = `${scriptURL}?student=${encodeURIComponent(studentName)}&action=${encodeURIComponent(actionType)}&detail=${encodeURIComponent(detailData)}`;
 
             fetch(url, { mode: 'no-cors' })
@@ -121,9 +140,20 @@
                 .catch(error => console.log('[기록 실패]', error));
         }
 
+        // 🌟 달콤쿠키/마법씨앗 (5단계 전용 대사 & 보너스 쿠키!)
         function saveReflection(type) {
             playTapSound();
-            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "최고의 마법사군요! 완벽해요! ✨" : "기호를 잘 살피면 정답을 찾을 수 있어요! 🌱";
+            if (type === '달콤쿠키') {
+                document.getElementById('ari-text').innerText = "최고의 마법사군요! 완벽해요! ✨";
+                setAriImage('happy'); // 성공 옷
+                
+                let cookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+                localStorage.setItem('ari_cookies', cookies + 1);
+                document.getElementById('cookie-count').innerText = cookies + 1;
+            } else {
+                document.getElementById('ari-text').innerText = "기호를 잘 살피면 정답을 찾을 수 있어요! 🌱";
+                setAriImage('sad'); // 고민 옷
+            }
             sendToGAS('자기성찰_5단계', type); 
         }
 
@@ -152,6 +182,9 @@
             document.getElementById('ari-text').innerText = "덧셈일까요? 뺄셈일까요? 기호를 잘 보세요!";
             clearAnswer();
             isFirstTry = true; 
+            
+            // 문제 바뀔 때 늠름하게 서있기
+            setAriImage('happy');
         }
 
         function selectNumber(num) { playTapSound(); selectedNum = num; document.getElementById('answer-box').innerText = num; }
@@ -171,18 +204,18 @@
                 if (questionCount >= 10) { 
                     showFinalResult(); 
                 } else {
-                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    setAriImage('happy');
                     document.getElementById('ari-text').innerText = "훌륭해요! 당신은 정말 최고의 마법사예요!";
                     setTimeout(() => generateProblem(), 1500); 
                 }
             } else {
                 playFailSound(); isFirstTry = false; 
-                document.getElementById('ari-character').src = 'images/ari_think.png';
+                setAriImage('think');
                 document.getElementById('ari-text').innerText = "앗, 기호를 잘못 보았나요? 다시 확인해 봐요!";
                 
-                // 🌟 오답 시 2초 뒤에 다시 고르라고 격려해주기!
+                // 🌟 오답 시 2초 뒤 격려!
                 setTimeout(() => {
-                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    setAriImage('happy');
                     document.getElementById('ari-text').innerText = "기호를 잘 보고 다시 골라주세요!";
                 }, 2000);
             }
