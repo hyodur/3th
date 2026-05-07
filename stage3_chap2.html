@@ -74,17 +74,40 @@
     <div id="result-overlay"><div class="result-box" id="result-content"></div></div>
 
     <script>
-        // 🌟 [이름 기억하기 마법] - 없으면 물어보고, 있으면 넘어감!
+        // 🌟 1. 배경 마법
+        let savedBg = localStorage.getItem('current_bg') || 'bg_forest'; 
+        document.body.style.backgroundImage = `url('images/${savedBg}.png')`;
+
+        // 🌟 2. 만능 옷장 함수
+        function setAriImage(state) {
+            let currentSkin = localStorage.getItem('current_skin') || 'ari';
+            let ariImg = document.getElementById('ari-character');
+            if (!ariImg) return;
+            
+            if (currentSkin === 'ari') {
+                if (state === 'happy') ariImg.src = 'images/ari_happy.png';
+                else if (state === 'sad') ariImg.src = 'images/ari_sad.png';
+                else if (state === 'think') ariImg.src = 'images/ari_think.png';
+            } else {
+                if (state === 'happy') ariImg.src = 'images/' + currentSkin + '1.png';
+                else ariImg.src = 'images/' + currentSkin + '2.png';
+            }
+        }
+
+        // 입장하자마자 옷 입기!
+        setAriImage('happy');
+
+        // 🌟 [이름 기억하기 마법]
         let myName = localStorage.getItem('ari_student_name');
         if (!myName) {
             myName = prompt("꼬마 마법사님의 이름을 알려주세요! (예: 1번 김아리)");
             if(myName) {
                 localStorage.setItem('ari_student_name', myName);
             } else {
-                myName = "익명 마법사"; // 취소를 누를 경우
+                myName = "익명 마법사"; 
             }
         }
-        // 기본 마법 사운드 및 로컬 저장소 로직
+
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         function playTone(freq, type, dur, start=0) {
@@ -101,33 +124,40 @@
         let myCookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
         document.getElementById('cookie-count').innerText = myCookies;
 
-        // 🌟 [GAS 통신 마법 주문] - 이름표 붙여서 보내기!
-          function sendToGAS(actionType, detailData) {
-            // 방금 물어본 아이의 이름을 가져옵니다.
+        // 🌟 [GAS 통신 마법 주문]
+        function sendToGAS(actionType, detailData) {
             let studentName = localStorage.getItem('ari_student_name') || "이름모를 마법사";
-            
-            // 선생님의 진짜 GAS 주소!
             const scriptURL = 'https://script.google.com/macros/s/AKfycbz-Rw6jDy0t6gibrPSh6TXE5LuYsDs466mqCWtL50_n3XUe8xAQJyc0GsI8J7oMW5N6cw/exec';
-            
-            // 주소 뒤에 student(이름) 데이터를 추가해서 쏩니다!
             const url = `${scriptURL}?student=${encodeURIComponent(studentName)}&action=${encodeURIComponent(actionType)}&detail=${encodeURIComponent(detailData)}`;
 
             fetch(url, { mode: 'no-cors' })
                 .then(() => console.log(`[시트 기록 완료] ${studentName} - ${actionType}: ${detailData}`))
                 .catch(error => console.log('[기록 실패]', error));
         }
+
+        // 🌟 달콤쿠키/마법씨앗 업그레이드!
         function saveReflection(type) {
             playTapSound();
-            document.getElementById('ari-text').innerText = type === '달콤쿠키' ? "0의 마법도 완벽하군요! ✨" : "0의 규칙을 조금 더 생각해 봐요! 🌱";
+            if (type === '달콤쿠키') {
+                document.getElementById('ari-text').innerText = "0의 마법도 완벽하군요! ✨";
+                setAriImage('happy'); // 성공 옷
+                
+                // 쿠키 1개 보너스!
+                let cookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
+                localStorage.setItem('ari_cookies', cookies + 1);
+                document.getElementById('cookie-count').innerText = cookies + 1;
+            } else {
+                document.getElementById('ari-text').innerText = "0의 규칙을 조금 더 생각해 봐요! 🌱";
+                setAriImage('sad'); // 고민 옷
+            }
             sendToGAS('자기성찰_3단계(그림)', type); 
         }
+
         let currentAns = 0, selectedNum = null, questionCount = 0, score = 0, isFirstTry = true;
 
         function generateProblem() {
             let n1 = Math.floor(Math.random() * 5) + 5; 
-            
-            // 🌟 [수정됨] 0은 4단계(공개수업)를 위해 철저히 아껴둡니다!
-            // 1부터 (n1-1)까지만 빼도록 설정해서 정답도, 빼는 수도 절대 0이 나오지 않게 합니다.
+            // 0은 4단계(공개수업)를 위해 철저히 아껴둡니다!
             let n2 = Math.floor(Math.random() * (n1 - 1)) + 1; 
             
             currentAns = n1 - n2;
@@ -136,6 +166,9 @@
             document.getElementById('ari-text').innerText = "이 뺄셈 식의 정답은 무엇일까요?";
             clearAnswer();
             isFirstTry = true;
+            
+            // 문제 낼 때 표정 초기화
+            setAriImage('happy');
         }
 
         function selectNumber(num) { playTapSound(); selectedNum = num; document.getElementById('answer-box').innerText = num; }
@@ -151,14 +184,20 @@
                 questionCount++;
                 if (questionCount >= 10) showFinalResult();
                 else {
-                    document.getElementById('ari-character').src = 'images/ari_happy.png';
+                    setAriImage('happy');
                     document.getElementById('ari-text').innerText = "딩동댕! 뺄셈 마법 성공!";
                     setTimeout(generateProblem, 1500);
                 }
             } else {
                 playFailSound(); isFirstTry = false;
-                document.getElementById('ari-character').src = 'images/ari_think.png';
+                setAriImage('think');
                 document.getElementById('ari-text').innerText = "어라? 거꾸로 하나씩 세어볼까요?";
+                
+                // 🌟 오답 후 2초 뒤 표정 복구 추가
+                setTimeout(() => {
+                    setAriImage('happy');
+                    document.getElementById('ari-text').innerText = "다시 한번 정답을 골라주세요!";
+                }, 2000);
             }
         }
 
