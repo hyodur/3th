@@ -220,20 +220,29 @@
             });
         }
 
-        // ▼▼▼ 자기 성찰 저장 마법 ▼▼▼
+       // ▼▼▼ 자기 성찰 저장 마법 (수정됨) ▼▼▼
         function saveReflection(type) {
             playMoveSound();
 
             if(type === '달콤쿠키') {
                 document.getElementById('ari-text').innerText = "와! 마법을 완벽하게 익혔군요! 달콤한 배움이에요! ✨";
-                setAriImage('happy'); // 🚨 여기도 수정! 성공 표정
+                setAriImage('happy'); 
                 
-                // 쿠키 추가
-                let cookies = parseInt(localStorage.getItem('ari_cookies')) || 0;
-                localStorage.setItem('ari_cookies', cookies + 1);
+                // 🚨 수정된 부분: 화면 숫자도 올리고 30개 검사도 추가!
+                myCookies++; 
+                localStorage.setItem('ari_cookies', myCookies);
+                document.getElementById('cookie-count').innerText = myCookies; // 화면 업데이트
+
+                if (myCookies === 30) {
+                    localStorage.setItem('ari_stage2_unlocked', 'true');
+                    sendToGAS('1단계_마스터', '쿠키30개달성');
+                    setTimeout(() => {
+                        document.getElementById('ari-text').innerText = "🎉 축하해요! 쿠키 30개를 모아서 2단계 문이 열렸어요! 지도로 돌아가보세요! 🎉";
+                    }, 1500);
+                }
             } else {
                 document.getElementById('ari-text').innerText = "마법씨앗을 심었군요! 내일은 더 멋진 싹이 날 거예요! 🌱";
-                setAriImage('sad'); // 🚨 여기도 수정! 고민 표정
+                setAriImage('sad'); 
             }
             
             const reflectionData = {
@@ -257,6 +266,8 @@
                 .catch(error => console.log('[기록 실패]', error));
         }
 
+        // ▼▼▼ 정답 확인 마법 (수정됨) ▼▼▼
+        // (원래 있던 checkAnswer 함수 안쪽 내용 중 성공했을 때 부분만 수정)
         function checkAnswer() {
             let success = false;
             if(problemType === "모으기") {
@@ -265,18 +276,36 @@
                 let c1 = parseInt(document.getElementById('circle-part1').getAttribute('data-count')), c2 = parseInt(document.getElementById('circle-part2').getAttribute('data-count'));
                 if(c1 + c2 === problemWhole && c1 > 0 && c2 > 0) success = true;
             }
+            
             if(success) {
-                playSuccessSound(); myCookies++; localStorage.setItem('ari_cookies', myCookies);
+                playSuccessSound(); 
+                myCookies++; 
+                localStorage.setItem('ari_cookies', myCookies);
                 document.getElementById('cookie-count').innerText = myCookies;
 
-                if (myCookies >= 30) {
+                if (myCookies === 30) { // 딱 30개가 되는 순간!
                     localStorage.setItem('ari_stage2_unlocked', 'true');
                     sendToGAS('1단계_마스터', '쿠키30개달성');
+                    // 🚨 추가된 부분: 아이들에게 2단계가 열렸다고 텍스트로 알려주기!
+                    setTimeout(() => {
+                        document.getElementById('ari-text').innerText = "🎉 축하해요! 쿠키 30개를 모아서 2단계 문이 열렸어요! 지도로 돌아가보세요! 🎉";
+                    }, 1500);
                 }
+
                 document.getElementById('cookie-popup').style.display = 'block';
                 setTimeout(() => { document.getElementById('cookie-popup').style.display = 'none'; makeProblemStage1(); }, 1500);
             } else {
                 playFailSound(); 
+                setAriImage('think'); 
+                document.getElementById('ari-text').innerText = "어라? 마법 주문이 살짝 꼬였나 봐요. 다시 한번 해볼까요?";
+                
+                setTimeout(() => { 
+                    setAriImage('happy'); 
+                    if(problemType === "모으기") document.getElementById('ari-text').innerText = "이 두 쿠키 마법을 모으면 얼마가 될까?";
+                    else document.getElementById('ari-text').innerText = "이 쿠키 마법을 두 곳으로 갈라볼까?";
+                }, 2000);
+            }
+        }
                 
                 // 🚨 오답 시 옷 벗겨지던 범인 검거!
                 setAriImage('think'); 
