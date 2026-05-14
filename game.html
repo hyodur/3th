@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>아리의 마법 훈련소 (최종 완결판)</title>
-    <style>
-        body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; -webkit-touch-callout: none; user-select: none; }
+   <style>
+        /* 💡 핵심 수정 1: body에 100dvh, position: fixed, width: 100%, touch-action: none 추가! */
+        body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100dvh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; position: fixed; width: 100%; touch-action: none; -webkit-touch-callout: none; user-select: none; }
+        
         #top-bar { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
         .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 10; }
         .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
@@ -29,12 +31,14 @@
         #cookie-source { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 10px; }
         #cookie-shelf { display: flex; gap: 8px; font-size: 35px; cursor: pointer; padding: 10px 20px; background-color: rgba(255, 255, 255, 0.7); border-radius: 15px; }
         .draggable-cookie { position: absolute; width: 50px; height: 50px; font-size: 40px; text-align: center; cursor: grab; z-index: 50; pointer-events: none; }
-        #bottom-area { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; margin-bottom: 20px; padding: 0 20px; box-sizing: border-box;}
+        
+        /* 💡 핵심 수정 2: margin-top: auto; 추가 및 margin-bottom 살짝 조절 */
+        #bottom-area { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; margin-top: auto; margin-bottom: 15px; padding: 0 20px; box-sizing: border-box;}
+        
         #ari-container { display: flex; align-items: center; }
         #ari-character { width: 120px; height: 120px; object-fit: contain; }
         #speech-bubble { background-color: white; border: 3px solid #a29bfe; border-radius: 15px; padding: 10px 20px; font-size: 18px; font-weight: bold; color: #2d3436; margin-left: 10px; max-width: 250px; }
         #submit-btn { background-color: #00b894; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
-        /* ▼▼▼ 기존 #submit-btn 아래에 추가! ▼▼▼ */
         #clear-btn { background-color: #74b9ff; color: white; border: none; padding: 15px 20px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); white-space: nowrap; }
         #cookie-popup { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 200; animation: popIn 0.5s forwards; }
         #cookie-popup img { width: 250px; height: auto; }
