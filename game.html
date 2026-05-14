@@ -6,8 +6,25 @@
     <title>아리의 마법 훈련소 (최종 완결판)</title>
    <style>
         /* 💡 핵심 수정 1: body에 100dvh, position: fixed, width: 100%, touch-action: none 추가! */
-        body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100dvh; background-image: url('images/bg_forest.jpg'); background-size: cover; background-position: center; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; position: fixed; width: 100%; touch-action: none; -webkit-touch-callout: none; user-select: none; }
-        
+body { 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            height: 100dvh; 
+            width: 100%; 
+            position: fixed; 
+            background-image: url('images/bg_forest.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; /* 🚨 바로 이 녀석이 중복을 막아줍니다! */
+            font-family: 'Malgun Gothic', sans-serif; 
+            overflow: hidden; 
+            touch-action: none; 
+            -webkit-touch-callout: none; 
+            user-select: none; 
+        }        
         #top-bar { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
         .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 10; }
         .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
