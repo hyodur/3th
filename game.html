@@ -84,7 +84,7 @@
     </div>
     <div id="cookie-popup"><img src="images/success_cookie_popup.png" alt="정답 쿠키"></div>
 
-   <script>
+ <script>
         // 1. 배경 마법
         let savedBg = localStorage.getItem('current_bg') || 'bg_flower'; 
         document.body.style.backgroundImage = `url('images/${savedBg}.png')`;
@@ -96,18 +96,15 @@
             if (!ariImg) return;
             
             if (currentSkin === 'ari') {
-                // 기본 아리일 때
                 if (state === 'happy') ariImg.src = 'images/ari_happy.png';
                 else if (state === 'sad') ariImg.src = 'images/ari_sad.png';
                 else if (state === 'think') ariImg.src = 'images/ari_think.png';
             } else {
-                // 상점 옷일 때 (happy면 1번, sad/think면 2번 이미지)
                 if (state === 'happy') ariImg.src = 'images/' + currentSkin + '1.png';
                 else ariImg.src = 'images/' + currentSkin + '2.png';
             }
         }
 
-        // 입장하자마자 웃는 모습으로 세팅 (여기서 옷 입고 시작!)
         setAriImage('happy');
 
         // 🌟 [이름 기억하기 마법]
@@ -148,7 +145,6 @@
             problemType = Math.random() < 0.5 ? "모으기" : "가르기";
             problemWhole = Math.floor(Math.random() * 5) + 3; 
             
-            // 🚨 문제 바뀔 때 강제로 ari_happy.png로 바뀌던 범인 검거!
             setAriImage('happy'); 
 
             ['whole', 'part1', 'part2'].forEach(id => {
@@ -220,7 +216,7 @@
             });
         }
 
-       // ▼▼▼ 자기 성찰 저장 마법 (수정됨) ▼▼▼
+        // ▼▼▼ 자기 성찰 저장 마법 (수정됨) ▼▼▼
         function saveReflection(type) {
             playMoveSound();
 
@@ -228,10 +224,9 @@
                 document.getElementById('ari-text').innerText = "와! 마법을 완벽하게 익혔군요! 달콤한 배움이에요! ✨";
                 setAriImage('happy'); 
                 
-                // 🚨 수정된 부분: 화면 숫자도 올리고 30개 검사도 추가!
                 myCookies++; 
                 localStorage.setItem('ari_cookies', myCookies);
-                document.getElementById('cookie-count').innerText = myCookies; // 화면 업데이트
+                document.getElementById('cookie-count').innerText = myCookies;
 
                 if (myCookies === 30) {
                     localStorage.setItem('ari_stage2_unlocked', 'true');
@@ -267,7 +262,6 @@
         }
 
         // ▼▼▼ 정답 확인 마법 (수정됨) ▼▼▼
-        // (원래 있던 checkAnswer 함수 안쪽 내용 중 성공했을 때 부분만 수정)
         function checkAnswer() {
             let success = false;
             if(problemType === "모으기") {
@@ -283,10 +277,9 @@
                 localStorage.setItem('ari_cookies', myCookies);
                 document.getElementById('cookie-count').innerText = myCookies;
 
-                if (myCookies === 30) { // 딱 30개가 되는 순간!
+                if (myCookies === 30) {
                     localStorage.setItem('ari_stage2_unlocked', 'true');
                     sendToGAS('1단계_마스터', '쿠키30개달성');
-                    // 🚨 추가된 부분: 아이들에게 2단계가 열렸다고 텍스트로 알려주기!
                     setTimeout(() => {
                         document.getElementById('ari-text').innerText = "🎉 축하해요! 쿠키 30개를 모아서 2단계 문이 열렸어요! 지도로 돌아가보세요! 🎉";
                     }, 1500);
@@ -306,19 +299,7 @@
                 }, 2000);
             }
         }
-                
-                // 🚨 오답 시 옷 벗겨지던 범인 검거!
-                setAriImage('think'); 
-                document.getElementById('ari-text').innerText = "어라? 마법 주문이 살짝 꼬였나 봐요. 다시 한번 해볼까요?";
-                
-                setTimeout(() => { 
-                    // 🚨 2초 뒤에 기본 옷으로 돌아가던 범인 검거!
-                    setAriImage('happy'); 
-                    if(problemType === "모으기") document.getElementById('ari-text').innerText = "이 두 쿠키 마법을 모으면 얼마가 될까?";
-                    else document.getElementById('ari-text').innerText = "이 쿠키 마법을 두 곳으로 갈라볼까?";
-                }, 2000);
-            }
-        }
+
         if(stage === 1) makeProblemStage1();
     </script>
 </body>
