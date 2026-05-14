@@ -62,7 +62,7 @@
 
         </div>
 
-        <script>
+       <script>
     // 🌟 [입구 출석부] - 들어올 때 딱 한 번만 이름 물어보기!
     let myName = localStorage.getItem('ari_student_name');
     if (!myName) {
@@ -75,84 +75,90 @@
     }
     console.log("환영합니다, " + localStorage.getItem('ari_student_name') + "님!");
             
-        // 1. 현재 열려있는 가장 높은 단계 확인 (기본값은 1단계)
-       let maxUnlockedStage = parseInt(localStorage.getItem('ari_unlocked_stage')) || 1;
-        // 🌟 [핵심 수정] 1단계(game.html)에서 쿠키 30개를 모아 'ari_stage2_unlocked'가 true가 되었다면?
-        // maxUnlockedStage를 2단계로 올려줍니다!
-        // 1. 현재 열려있는 단계 확인 (기존 코드에 4단계 추가)
-        if (localStorage.getItem('ari_stage3_unlocked') === 'true') {
-            if (maxUnlockedStage < 3) {
-                maxUnlockedStage = 3;
-                localStorage.setItem('ari_unlocked_stage', 3); 
-            }
+    // 1. 현재 열려있는 가장 높은 단계 확인 (기본값은 1단계)
+    let maxUnlockedStage = parseInt(localStorage.getItem('ari_unlocked_stage')) || 1;
+
+    // 🌟 [핵심 수정] 1단계에서 쿠키 30개를 모아 'ari_stage2_unlocked'가 true가 되었다면?
+    // 2단계 자물쇠를 풀어줍니다!
+    if (localStorage.getItem('ari_stage2_unlocked') === 'true') {
+        if (maxUnlockedStage < 2) {
+            maxUnlockedStage = 2;
+            localStorage.setItem('ari_unlocked_stage', 2); 
         }
-        
-        // ▼▼▼ 여기에 4단계(공개수업) 해금 로직 추가! ▼▼▼
-        if (localStorage.getItem('ari_stage4_unlocked') === 'true') {
-            if (maxUnlockedStage < 4) {
-                maxUnlockedStage = 4;
-                localStorage.setItem('ari_unlocked_stage', 4); 
-            }
-        }
-        if (localStorage.getItem('ari_stage5_unlocked') === 'true') {
-    if (maxUnlockedStage < 5) {
-        maxUnlockedStage = 5;
-        localStorage.setItem('ari_unlocked_stage', 5); 
     }
-}
 
-        // 2. 단계별 정보 설정
-        const stages = [
-            { id: 1, name: "가르기와 모으기" },
-            { id: 2, name: "덧셈의 기초" },
-            { id: 3, name: "뺄셈의 기초" },
-            { id: 4, name: "0의 마법" }, 
-            { id: 5, name: "덧셈 뺄셈 마스터" }
-        ];
+    // 🌟 2단계를 클리어해서 3단계 열쇠를 얻었다면?
+    if (localStorage.getItem('ari_stage3_unlocked') === 'true') {
+        if (maxUnlockedStage < 3) {
+            maxUnlockedStage = 3;
+            localStorage.setItem('ari_unlocked_stage', 3); 
+        }
+    }
+    
+    // 🌟 3단계를 클리어해서 4단계 열쇠를 얻었다면?
+    if (localStorage.getItem('ari_stage4_unlocked') === 'true') {
+        if (maxUnlockedStage < 4) {
+            maxUnlockedStage = 4;
+            localStorage.setItem('ari_unlocked_stage', 4); 
+        }
+    }
 
-        const mapContainer = document.getElementById('map-container');
+    // 🌟 4단계를 클리어해서 5단계 열쇠를 얻었다면?
+    if (localStorage.getItem('ari_stage5_unlocked') === 'true') {
+        if (maxUnlockedStage < 5) {
+            maxUnlockedStage = 5;
+            localStorage.setItem('ari_unlocked_stage', 5); 
+        }
+    }
 
-        // 3. 지도 위에 아이콘 배치하기
-        stages.forEach(stage => {
-            const btn = document.createElement('div');
-            btn.className = 'stage-btn';
-            btn.id = 'stage' + stage.id; // 아이디가 stage1, stage2 등으로 자동 생성됨!
+    // 2. 단계별 정보 설정
+    const stages = [
+        { id: 1, name: "가르기와 모으기" },
+        { id: 2, name: "덧셈의 기초" },
+        { id: 3, name: "뺄셈의 기초" },
+        { id: 4, name: "0의 마법" }, 
+        { id: 5, name: "덧셈 뺄셈 마스터" }
+    ];
 
-            let iconImg = '';
+    const mapContainer = document.getElementById('map-container');
 
-            // 상태에 따라 보여줄 이미지 결정
-            if (stage.id > maxUnlockedStage) {
-                // 🔒 잠긴 단계
-                btn.classList.add('locked');
-                iconImg = 'images/stage_icon_locked.png'; // 선생님이 지정하신 잠금 이미지!
-                btn.onclick = () => alert("아직 마법의 자물쇠가 잠겨있어요! 이전 단계를 클리어해주세요! 🔒");
+    // 3. 지도 위에 아이콘 배치하기
+    stages.forEach(stage => {
+        const btn = document.createElement('div');
+        btn.className = 'stage-btn';
+        btn.id = 'stage' + stage.id;
+
+        let iconImg = '';
+
+        // 상태에 따라 보여줄 이미지 결정
+        if (stage.id > maxUnlockedStage) {
+            // 🔒 잠긴 단계
+            btn.classList.add('locked');
+            iconImg = 'images/stage_icon_locked.png';
+            btn.onclick = () => alert("아직 마법의 자물쇠가 잠겨있어요! 이전 단계를 클리어해주세요! 🔒");
+        } else {
+            // ✨ 열린 단계
+            if (stage.id === 4) {
+                iconImg = 'images/stage_0_special.png';
             } else {
-                // ✨ 열린 단계
-                if (stage.id === 4) {
-                    iconImg = 'images/stage_0_special.png';
-                } else {
-                    iconImg = 'images/stage_icon_active.png'; // 선생님이 지정하신 활성 이미지!
-                }
-                
-              // 클릭하면 이동하는 경로 설정
-               btn.onclick = () => {
-    if (stage.id === 1) window.location.href = 'game.html?stage=1';
-    else if (stage.id === 2) window.location.href = 'stage2.html';
-    else if (stage.id === 3) window.location.href = 'stage3.html';
-    else if (stage.id === 4) window.location.href = 'stage4.html';
-    else if (stage.id === 5) {
-        // 🌟 5단계 버튼을 눌렀을 때의 경로!
-        window.location.href = 'stage5.html'; 
-    } else {
-        alert("마법 훈련소가 아직 건설 중입니다! 🛠️");
-    }
-};
+                iconImg = 'images/stage_icon_active.png';
             }
+                
+            // 클릭하면 이동하는 경로 설정
+            btn.onclick = () => {
+                if (stage.id === 1) window.location.href = 'game.html?stage=1';
+                else if (stage.id === 2) window.location.href = 'stage2.html';
+                else if (stage.id === 3) window.location.href = 'stage3.html';
+                else if (stage.id === 4) window.location.href = 'stage4.html';
+                else if (stage.id === 5) window.location.href = 'stage5.html'; 
+                else alert("마법 훈련소가 아직 건설 중입니다! 🛠️");
+            };
+        }
 
-            btn.innerHTML = `<img src="${iconImg}" alt="${stage.name}">`;
-            mapContainer.appendChild(btn);
-        });
-    </script>
+        btn.innerHTML = `<img src="${iconImg}" alt="${stage.name}">`;
+        mapContainer.appendChild(btn);
+    });
+</script>
     <a href="store.html" class="store-entrance-btn">🛍️ 마법 상점 가기</a>
 </body>
 </html>
