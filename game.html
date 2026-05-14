@@ -5,26 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>아리의 마법 훈련소 (최종 완결판)</title>
    <style>
-        /* 💡 핵심 수정 1: body에 100dvh, position: fixed, width: 100%, touch-action: none 추가! */
-body { 
-            margin: 0; 
-            padding: 0; 
+      /* 💡 1단계: 하얀 여백 원천 차단! html부터 꽉 채우기 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #a29bfe; /* 만약 이미지가 짧아도 예쁜 보라색이 나오게 방어막! */
+        }
+
+        /* 💡 2단계: 화면에 완벽하게 못 박기 (구형/신형 태블릿 모두 호환) */
+        body { 
+            position: fixed; 
+            top: 0;       /* 천장에 딱 붙이기 */
+            left: 0;      /* 왼쪽에 딱 붙이기 */
+            width: 100%; 
+            height: 100vh;  /* 구형 기기용 예비 주문 */
+            height: 100dvh; /* 최신 기기용 마법 주문 */
+            
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            height: 100dvh; 
-            width: 100%; 
-            position: fixed; 
+            
             background-image: url('images/bg_forest.jpg'); 
             background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat; /* 🚨 바로 이 녀석이 중복을 막아줍니다! */
+            background-position: center bottom; /* 바닥을 기준으로 꽉 채우기! */
+            background-repeat: no-repeat; 
+            
             font-family: 'Malgun Gothic', sans-serif; 
             overflow: hidden; 
             touch-action: none; 
             -webkit-touch-callout: none; 
             user-select: none; 
-        }        
+        }
         #top-bar { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
         .back-btn { background-color: #ff7675; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 10; }
         .cookie-wallet { background-color: #f39c12; color: white; padding: 8px 15px; border-radius: 20px; font-size: 16px; font-weight: bold; }
