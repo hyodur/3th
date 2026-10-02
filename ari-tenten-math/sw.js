@@ -1,4 +1,4 @@
-const CACHE_NAME = "ari-tenten-math-v16-pwa-1";
+const CACHE_NAME = "ari-tenten-math-v18-pwa-1";
 const APP_SHELL = [
   "./",
   "./index.html",

@@ -252,6 +252,7 @@
     }
     .character-token.small { width: clamp(82px, 16vw, 120px); background: linear-gradient(145deg, #fff3a9, #f5d8ff); }
     .character-token.small .character-art { width: 126%; height: 126%; }
+    .character-token[hidden], .preview-character[hidden] { display: none !important; }
     .character-token.locked {
       color: transparent;
       background: linear-gradient(145deg, #74658f, #44365f);
@@ -517,6 +518,7 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
+    .wardrobe-preview.solo { grid-template-columns: minmax(0, 420px); justify-content: center; }
     .preview-character {
       min-height: 190px;
       display: grid;
@@ -1155,7 +1157,7 @@
         <div class="journey-ribbon" aria-label="네 개의 모험 지역"><span>🌲</span><i>✦</i><span>🌸</span><i>✦</i><span>🎁</span><i>✦</i><span>🌈</span></div>
         <div class="character-row" aria-label="등장 캐릭터">
           <div id="ari-preview" class="character-token" aria-label="별빛 견습 마법사 아리"><img id="ari-preview-art" class="character-art" src="assets/characters/ari-idle.png" alt=""><span id="ari-preview-accessory" class="cosmetic-accessory" aria-hidden="true" hidden></span><span>아리</span></div>
-          <div id="tenten-preview" class="character-token small locked" aria-label="아직 만나지 못한 숫자 요정"><span id="tenten-preview-label">???</span></div>
+          <div id="tenten-preview" class="character-token small" aria-label="숫자 요정 텐텐" hidden></div>
         </div>
         <div class="button-row">
           <button id="start-btn" class="primary" type="button">모험 지도 펼치기</button>
@@ -1178,7 +1180,7 @@
           </div>
         </header>
 
-        <button id="shop-btn" class="shop-entry" type="button">🎁 보상 가방·상점 <span id="shop-reward-count">0 / 4</span></button>
+        <button id="shop-btn" class="shop-entry" type="button">🎁 보상 가방·상점 <span id="shop-reward-count">0 / 3</span></button>
 
         <section class="adventure-map" aria-label="2단원 모험 지역">
           <article id="forest-stage" class="stage-card forest">
@@ -1269,7 +1271,7 @@
               <span id="shop-ari-accessory" class="cosmetic-accessory" aria-hidden="true" hidden></span>
               <strong id="shop-ari-label">별빛 마법사 아리</strong>
             </div>
-            <div class="preview-character">
+            <div id="shop-tenten-slot" class="preview-character" hidden>
               <img id="shop-tenten-preview" src="assets/characters/tenten-idle.png" alt="현재 텐텐 코스튬">
               <span id="shop-tenten-accessory" class="cosmetic-accessory" aria-hidden="true" hidden></span>
               <strong id="shop-tenten-label">숫자 요정 텐텐</strong>

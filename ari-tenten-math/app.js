@@ -50,7 +50,7 @@
   const progressBar = $(".progress-track");
 
   const state = {
-    version: 13,
+    version: 14,
     soundEnabled: true,
     musicEnabled: true,
     cookies: 0,
@@ -64,6 +64,7 @@
     clearedRainbow: false,
     rainbowClears: 0,
     rainbowCorrect: 0,
+    metTenten: false,
     unlockedTenten: false,
     missionCount: 0,
     starStampProgress: 0,
@@ -120,11 +121,16 @@
       if (!saved || typeof saved !== "object") return;
 
       if (Number(saved.version) >= 2) {
-        state.version = 13;
+        state.version = 14;
         state.soundEnabled = saved.soundEnabled !== false;
         state.musicEnabled = saved.musicEnabled !== false;
         state.cookies = Math.max(Number(saved.cookies) || 0, 0);
         state.stars = Math.max(Number(saved.stars) || 0, 0);
+        state.metTenten = Boolean(
+          saved.metTenten ||
+          saved.unlockedTenten ||
+          ["adventure", "mission", "treasure", "rainbow"].includes(saved.run?.mode)
+        );
         state.unlockedTenten = Boolean(saved.unlockedTenten);
         state.clearedForest = Boolean(saved.clearedForest || saved.unlockedTenten);
         state.forestClears = Math.max(Number(saved.forestClears) || (state.clearedForest ? 1 : 0), 0);
@@ -168,6 +174,7 @@
       state.cookies = Math.max(Number(saved.cookies) || 0, 0);
       state.stars = Math.max(Number(saved.stars) || 0, 0);
       state.unlockedTenten = Boolean(saved.unlockedTenten);
+      state.metTenten = state.unlockedTenten;
       state.clearedForest = state.unlockedTenten;
       state.forestClears = state.clearedForest ? 1 : 0;
       if (state.unlockedTenten) {
@@ -420,6 +427,9 @@
   function renderShop() {
     $("#shop-cookie-count").textContent = state.cookies;
     $("#shop-star-count").textContent = state.stars;
+    $(".shop-subtitle").textContent = state.metTenten
+      ? "연습해서 모은 보상으로 친구들을 꾸며요!"
+      : "연습해서 모은 보상으로 아리를 꾸며요!";
     $("#star-stamp-label").textContent = `다음 꾸준별까지 ${state.starStampProgress} / 3`;
     [...document.querySelectorAll("#star-stamp-dots span")].forEach((dot, index) => {
       dot.classList.toggle("filled", index < state.starStampProgress);
@@ -427,7 +437,9 @@
 
     const badges = $("#reward-badges");
     badges.replaceChildren();
-    REWARD_BADGES.forEach((badgeInfo) => {
+    REWARD_BADGES
+      .filter((badgeInfo) => state.metTenten || badgeInfo.key !== "unlockedTenten")
+      .forEach((badgeInfo) => {
       const earned = Boolean(state[badgeInfo.key]);
       const badge = document.createElement("div");
       badge.className = `reward-badge${earned ? "" : " locked"}`;
@@ -440,19 +452,25 @@
       status.textContent = earned ? "가방에 보관 중" : "모험하면 열려요";
       badge.append(icon, name, status);
       badges.appendChild(badge);
-    });
+      });
 
     $("#shop-ari-preview").src = costumeAsset("ari");
     $("#shop-ari-label").textContent = shopItem(state.equippedAri)?.name || "별빛 마법사 아리";
     paintAccessory("#shop-ari-accessory", "ari");
+    $("#shop-tenten-slot").hidden = !state.metTenten;
+    $(".wardrobe-preview").classList.toggle("solo", !state.metTenten);
     $("#shop-tenten-preview").src = costumeAsset("tenten");
-    $("#shop-tenten-preview").style.opacity = state.unlockedTenten ? "1" : ".2";
-    $("#shop-tenten-label").textContent = state.unlockedTenten ? (shopItem(state.equippedTenten)?.name || "숫자 요정 텐텐") : "아직 만나지 못한 친구";
+    $("#shop-tenten-preview").style.opacity = "1";
+    $("#shop-tenten-label").textContent = state.unlockedTenten
+      ? (shopItem(state.equippedTenten)?.name || "숫자 요정 텐텐")
+      : "별정원에서 만난 텐텐";
     paintAccessory("#shop-tenten-accessory", "tenten");
 
     const grid = $("#shop-items");
     grid.replaceChildren();
-    SHOP_ITEMS.forEach((item) => {
+    SHOP_ITEMS
+      .filter((item) => state.metTenten || (item.target !== "tenten" && item.requires !== "tenten"))
+      .forEach((item) => {
       const owned = state.ownedItems.includes(item.id);
       const equipped = itemIsEquipped(item);
       const unlocked = itemRequirementMet(item);
@@ -499,7 +517,7 @@
       info.append(title, copy, action);
       card.append(art, info);
       grid.appendChild(card);
-    });
+      });
     showScreen("shop-screen");
   }
 
@@ -581,6 +599,8 @@
   }
 
   function startRun(mode, resume = false) {
+    const firstTentenMeeting = mode === "adventure" && !state.metTenten;
+    if (firstTentenMeeting) state.metTenten = true;
     if (!resume || !state.run || state.run.mode !== mode) {
       const questions = mode === "forest"
         ? makeForestQuestions()
@@ -598,6 +618,8 @@
         firstTryCorrect: 0,
         initialLevels: initialLevels()
       };
+      save();
+    } else if (firstTentenMeeting) {
       save();
     }
     showScreen("game-screen");
@@ -833,7 +855,7 @@
       cell.className = `ten-cell ${i < question.given ? "filled" : "missing"}`;
       frame.appendChild(cell);
     }
-    $("#hint-panel strong").textContent = state.unlockedTenten ? "텐텐의 도움!" : "아리의 생각!";
+    $("#hint-panel strong").textContent = state.metTenten ? "텐텐의 도움!" : "아리의 생각!";
     $("#hint-copy").textContent = `${question.given}칸이 찼어요. 비어 있는 ${question.answer}칸을 채워 볼까요?`;
   }
 
@@ -844,7 +866,7 @@
     const rainbow = state.run?.mode === "rainbow";
     const guide = $("#companion-guide");
     guide.hidden = false;
-    $("#tenten-game").hidden = forest || !state.unlockedTenten;
+    $("#tenten-game").hidden = forest || !state.metTenten;
     $("#ari-game-art").src = costumeAsset("ari", pose);
     $("#tenten-game-art").src = costumeAsset("tenten", pose);
     paintAccessory("#ari-game-accessory", "ari");
@@ -873,7 +895,7 @@
           : "텐텐이 10이 되는 조각을 아리에게 건네고 있어요!";
       return;
     }
-    $("#guide-copy").textContent = state.unlockedTenten
+    $("#guide-copy").textContent = state.metTenten
       ? pose === "success" ? "아리와 텐텐: 정답! 별꽃이 활짝 피었어!" : helping ? "텐텐: 10칸 중 비어 있는 칸을 세어 보자!" : "텐텐이 아리 옆에서 함께하고 있어요!"
       : pose === "success" ? "아리: 정답이야! 별빛이 반짝여!" : helping ? "아리: 10칸 중 비어 있는 칸을 천천히 세어 볼게!" : "아리가 숫자 친구를 찾고 있어요!";
   }
@@ -1115,7 +1137,8 @@
   function renderMap() {
     $("#map-cookie-count").textContent = state.cookies;
     $("#map-star-count").textContent = state.stars;
-    $("#shop-reward-count").textContent = `${REWARD_BADGES.filter((badge) => state[badge.key]).length} / ${REWARD_BADGES.length}`;
+    const visibleBadges = REWARD_BADGES.filter((badge) => state.metTenten || badge.key !== "unlockedTenten");
+    $("#shop-reward-count").textContent = `${visibleBadges.filter((badge) => state[badge.key]).length} / ${visibleBadges.length}`;
 
     $("#forest-status").textContent = state.clearedForest ? `완료 · 연습 ${state.forestClears}번` : "첫 모험";
     const forestButton = $("#forest-stage-btn");
@@ -1214,20 +1237,24 @@
     const preview = $("#tenten-preview");
     $("#ari-preview-art").src = costumeAsset("ari");
     paintAccessory("#ari-preview-accessory", "ari");
-    if (state.unlockedTenten) {
+    if (state.metTenten) {
+      preview.hidden = false;
       preview.classList.remove("locked");
       const tentenAccessory = accessoryItem("tenten");
       preview.innerHTML = `<img class="character-art" src="${costumeAsset("tenten")}" alt=""><span id="tenten-preview-accessory" class="cosmetic-accessory" aria-hidden="true"${tentenAccessory ? "" : " hidden"}>${tentenAccessory?.emoji || ""}</span><span id="tenten-preview-label">텐텐</span>`;
-      preview.setAttribute("aria-label", "동료가 된 숫자 요정 텐텐");
-      $("#intro-copy").innerHTML = state.clearedRainbow
-        ? "아리와 텐텐이 네 지역을 모두 밝혔어요!<br>좋아하는 지역에서 다시 연습해 보아요."
-        : state.clearedTreasure
-          ? "아리와 텐텐이 황금 열쇠를 찾았어요.<br>이제 10을 먼저 만들어 무지개 다리를 건너요!"
-          : "아리와 텐텐이 네 지역을 여행하고 있어요.<br>이제 10의 보물상자에서 황금 열쇠를 찾아요!";
+      preview.setAttribute("aria-label", state.unlockedTenten ? "동료가 된 숫자 요정 텐텐" : "별정원에서 만난 숫자 요정 텐텐");
+      $("#intro-copy").innerHTML = !state.unlockedTenten
+        ? "아리와 텐텐이 열 송이 별정원을 탐험하고 있어요!<br>숫자 친구를 찾아 텐텐과 진짜 친구가 되어 보아요."
+        : state.clearedRainbow
+          ? "아리와 텐텐이 네 지역을 모두 밝혔어요!<br>좋아하는 지역에서 다시 연습해 보아요."
+          : state.clearedTreasure
+            ? "아리와 텐텐이 황금 열쇠를 찾았어요.<br>이제 10을 먼저 만들어 무지개 다리를 건너요!"
+            : "아리와 텐텐이 네 지역을 여행하고 있어요.<br>이제 10의 보물상자에서 황금 열쇠를 찾아요!";
     } else {
-      preview.classList.add("locked");
-      preview.innerHTML = "<span id=\"tenten-preview-label\">???</span>";
-      preview.setAttribute("aria-label", "아직 만나지 못한 숫자 요정");
+      preview.hidden = true;
+      preview.classList.remove("locked");
+      preview.replaceChildren();
+      preview.removeAttribute("aria-label");
       $("#intro-copy").innerHTML = state.clearedForest
         ? "세 수 숲을 환하게 밝혔어요.<br>이제 열 송이 별정원에서 신비한 숫자 요정을 찾아요!"
         : "세 수 숲에서 첫 모험을 시작해요.<br>숲을 밝히면 열 송이 별정원으로 갈 수 있어요!";
@@ -1289,7 +1316,7 @@
     const soundEnabled = state.soundEnabled;
     const musicEnabled = state.musicEnabled;
     localStorage.removeItem(STORAGE_KEY);
-    Object.assign(state, { version: 13, soundEnabled, musicEnabled, cookies: 0, stars: 0, clearedForest: false, forestClears: 0, forestCorrect: 0, clearedTreasure: false, treasureClears: 0, rainbowCorrect: 0, clearedRainbow: false, rainbowClears: 0, unlockedTenten: false, missionCount: 0, starStampProgress: 0, ownedItems: ["ari-default"], equippedAri: "ari-default", equippedTenten: "tenten-default", equippedAriAccessory: null, equippedTentenAccessory: null, pairProgress: defaultPairProgress(), run: null });
+    Object.assign(state, { version: 14, soundEnabled, musicEnabled, cookies: 0, stars: 0, clearedForest: false, forestClears: 0, forestCorrect: 0, clearedTreasure: false, treasureClears: 0, rainbowCorrect: 0, clearedRainbow: false, rainbowClears: 0, metTenten: false, unlockedTenten: false, missionCount: 0, starStampProgress: 0, ownedItems: ["ari-default"], equippedAri: "ari-default", equippedTenten: "tenten-default", equippedAriAccessory: null, equippedTentenAccessory: null, pairProgress: defaultPairProgress(), run: null });
     save();
     settingsDialog.close();
     updateStart();
@@ -1317,13 +1344,14 @@
             treasureClears: state.treasureClears,
             clearedRainbow: state.clearedRainbow,
             rainbowClears: state.rainbowClears,
+            metTenten: state.metTenten,
             unlockedTenten: state.unlockedTenten,
             missionCount: state.missionCount,
             starStampProgress: state.starStampProgress,
             ownedItems: state.ownedItems.map((id) => shopItem(id)?.name || id),
             equipped: {
               ari: shopItem(state.equippedAri)?.name,
-              tenten: shopItem(state.equippedTenten)?.name,
+              tenten: state.metTenten ? shopItem(state.equippedTenten)?.name : null,
               ariAccessory: shopItem(state.equippedAriAccessory)?.name || null,
               tentenAccessory: shopItem(state.equippedTentenAccessory)?.name || null
             },
