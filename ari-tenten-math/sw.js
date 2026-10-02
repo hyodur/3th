@@ -1,8 +1,8 @@
-const CACHE_NAME = "ari-tenten-math-v19-pwa-1";
+const CACHE_NAME = "ari-tenten-math-v20-pwa-1";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./app.js?v=19",
+  "./app.js?v=20",
   "./manifest.webmanifest",
   "./assets/icons/app-icon-180.png",
   "./assets/icons/app-icon-192.png",
