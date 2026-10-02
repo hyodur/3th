@@ -1,8 +1,8 @@
-const CACHE_NAME = "ari-tenten-math-v18-pwa-1";
+const CACHE_NAME = "ari-tenten-math-v19-pwa-1";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./app.js",
+  "./app.js?v=19",
   "./manifest.webmanifest",
   "./assets/icons/app-icon-180.png",
   "./assets/icons/app-icon-192.png",
@@ -53,6 +53,18 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
+  if (request.destination === "script" || url.pathname.endsWith(".js")) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()));
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
