@@ -1,8 +1,8 @@
-const CACHE_NAME = "ari-tenten-math-v20-pwa-1";
+const CACHE_NAME = "ari-tenten-math-v21-pwa-1";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./app.js?v=20",
+  "./app.js?v=21",
   "./manifest.webmanifest",
   "./assets/icons/app-icon-180.png",
   "./assets/icons/app-icon-192.png",
@@ -21,7 +21,13 @@ const APP_SHELL = [
   "./assets/characters/tenten-hint.png",
   "./assets/characters/tenten-idle.png",
   "./assets/characters/tenten-rainbow-guide.png",
-  "./assets/characters/tenten-success.png"
+  "./assets/characters/tenten-success.png",
+  "./assets/characters/ari-galaxy-captain.png",
+  "./assets/characters/tenten-rocket-pilot.png",
+  "./assets/characters/ari-crystal-mage-v2.png",
+  "./assets/characters/tenten-snow-guardian-v2.png",
+  "./assets/characters/ari-starlight-hanbok.png",
+  "./assets/characters/tenten-starlight-hanbok.png"
 ];
 
 self.addEventListener("install", (event) => {

@@ -32,6 +32,12 @@
     { id: "tenten-cupcake-chef", kind: "costume", target: "tenten", name: "컵케이크 요리사 텐텐", copy: "열 개의 별단추를 단 달콤한 요리사예요.", price: 18, currency: "cookies", image: "assets/characters/tenten-cupcake-chef.png", requires: "tenten" },
     { id: "tenten-cloud-pajama", kind: "costume", target: "tenten", name: "구름달 잠옷 텐텐", copy: "보송보송 구름신발로 달빛을 사뿐 걸어요.", price: 3, currency: "stars", image: "assets/characters/tenten-cloud-pajama.png", requires: "treasure" },
     { id: "tenten-dino-explorer", kind: "costume", target: "tenten", name: "꼬마 공룡탐험대 텐텐", copy: "별 나침반을 들고 숫자 화석을 찾아요.", price: 28, currency: "cookies", image: "assets/characters/tenten-dino-explorer.png", requires: "rainbow" },
+    { id: "ari-galaxy-captain", kind: "costume", target: "ari", name: "별행성 우주대장 아리", copy: "반짝이는 우주복을 입고 별행성으로 출발해요!", price: 60, currency: "cookies", image: "assets/characters/ari-galaxy-captain.png", special: true },
+    { id: "tenten-rocket-pilot", kind: "costume", target: "tenten", name: "별로켓 조종사 텐텐", copy: "작은 별로켓을 타고 은하수를 여행해요!", price: 60, currency: "cookies", image: "assets/characters/tenten-rocket-pilot.png", requires: "tenten", special: true },
+    { id: "ari-crystal-princess", kind: "costume", target: "ari", name: "수정 공주 아리", copy: "수정 왕관과 포근한 겨울옷으로 눈꽃 축제에 가요!", price: 120, currency: "cookies", image: "assets/characters/ari-crystal-mage-v2.png", special: true },
+    { id: "tenten-snow-fairy", kind: "costume", target: "tenten", name: "눈꽃 겨울요정 텐텐", copy: "보송한 귀마개와 목도리로 겨울 모험을 떠나요!", price: 120, currency: "cookies", image: "assets/characters/tenten-snow-guardian-v2.png", requires: "tenten", special: true },
+    { id: "ari-starlight-hanbok", kind: "costume", target: "ari", name: "별빛 색동한복 아리", copy: "고운 색동 소매와 별빛 치마로 축제를 즐겨요!", price: 15, currency: "stars", image: "assets/characters/ari-starlight-hanbok.png", special: true },
+    { id: "tenten-starlight-hanbok", kind: "costume", target: "tenten", name: "별빛 쾌자 텐텐", copy: "별빛 쾌자를 입고 복주머니에 행복을 담아요!", price: 15, currency: "stars", image: "assets/characters/tenten-starlight-hanbok.png", requires: "tenten", special: true },
     { id: "ari-crown", kind: "accessory", target: "ari", name: "반짝 별왕관", copy: "첫 시도 정답 5개 이상이면 별조각 +1!", price: 2, currency: "stars", emoji: "👑", requires: "forest" },
     { id: "tenten-cookie", kind: "accessory", target: "tenten", name: "달콤 쿠키가방", copy: "모험을 끝낼 때마다 보너스 쿠키 +2!", price: 10, currency: "cookies", emoji: "🍪", requires: "tenten" }
   ];
@@ -471,7 +477,7 @@
       const equipped = itemIsEquipped(item);
       const unlocked = itemRequirementMet(item);
       const card = document.createElement("article");
-      card.className = "shop-item";
+      card.className = `shop-item${item.special ? " special-costume" : ""}`;
       const art = document.createElement("div");
       art.className = "shop-item-art";
       if (item.kind === "costume") {
@@ -488,6 +494,12 @@
         art.appendChild(emoji);
       }
       const info = document.createElement("div");
+      if (item.special) {
+        const label = document.createElement("span");
+        label.className = "special-costume-label";
+        label.textContent = "✨ 특별 코스튬";
+        info.appendChild(label);
+      }
       const title = document.createElement("h4");
       title.textContent = item.name;
       const copy = document.createElement("p");
