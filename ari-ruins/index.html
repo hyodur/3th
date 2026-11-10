@@ -1429,8 +1429,7 @@ async function finish() {
   progress.cookies += 4;
   const rewardId = twins ? "fairy-wings" : spring ? "fairy-crown" : "ari-gate";
   let star = first;
-  if (first) progress.equipped[outfitsById[rewardId].character] = rewardId;
-  else {
+  if (!first) {
     star = progress.replays === 1;
     progress.replays = star ? 0 : 1;
   }
